@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wizard Game Prototypes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .bg-toggle {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: #16213e;
+      color: #8899aa;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.2s, color 0.2s;
+      z-index: 10;
+    }
+    .bg-toggle:hover { border-color: #F4D03F; color: #e0e0e0; }
+    .bg-toggle.active { border-color: #F4D03F; color: #F4D03F; }
+    .launcher {
+      text-align: center;
+      max-width: 600px;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #F4D03F;
+    }
+    .subtitle {
+      color: #888;
+      margin-bottom: 2rem;
+    }
+    .prototypes {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .prototype-link {
+      display: block;
+      padding: 1.5rem;
+      background: #16213e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #e0e0e0;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .prototype-link:hover {
+      border-color: #F4D03F;
+      background: #1a2745;
+    }
+    .prototype-link h2 {
+      font-size: 1.2rem;
+      color: #F4D03F;
+      margin-bottom: 0.3rem;
+    }
+    .prototype-link p {
+      font-size: 0.9rem;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <button class="bg-toggle" id="bg-toggle">BG Effect</button>
+  <div class="launcher">
+    <h1>Wizard Game</h1>
+    <p class="subtitle">Select a prototype to launch</p>
+    <div class="prototypes">
+      <a href="/src/sandbox/" class="prototype-link">
+        <h2>Multiplayer Sandbox</h2>
+        <p>Draft, economy, card/board game prototype with pass-and-play multiplayer</p>
+      </a>
+      <a href="/src/roguelike/" class="prototype-link">
+        <h2>Roguelike Runs</h2>
+        <p>Slay the Spire-style single-player school progression (coming soon)</p>
+      </a>
+      <a href="/src/design/" class="prototype-link">
+        <h2>Design Tools</h2>
+        <p>Data explorers for types, spells, effects, schools, scientists, and more</p>
+      </a>
+    </div>
+  </div>
+  <script type="module">
+    import { initBackground, cycleBackground, getBackgroundMode } from '/src/shared/background.js';
+    initBackground();
+    const btn = document.getElementById('bg-toggle');
+    const labels = { off: 'BG: Off', swirl: 'BG: Swirl', forge: 'BG: Forge' };
+    function sync() {
+      const mode = getBackgroundMode();
+      btn.textContent = labels[mode];
+      btn.classList.toggle('active', mode !== 'off');
+    }
+    sync();
+    btn.addEventListener('click', () => { cycleBackground(); sync(); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(ls:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "mcp__SQLite__list_tables",
+      "mcp__SQLite__describe_table",
+      "mcp__SQLite__read_query",
+      "mcp__SQLite__write_query",
+      "mcp__SQLite__create_table",
+      "mcp__SQLite__append_insight"
+    ]
+  }
+}

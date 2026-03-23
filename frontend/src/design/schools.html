@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wizard Game — Wizard Schools</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0f0f1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 1800px; margin: 0 auto; }
+
+    /* --- Header --- */
+    header { text-align: center; margin-bottom: 28px; }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #E74C3C, #F4D03F, #27AE60, #2E86C1, #7D3C98);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    header p { color: #888; font-size: 14px; }
+
+    /* --- Navigation --- */
+    .nav {
+      text-align: center;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .nav a {
+      color: #7ab8f5;
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.15s;
+    }
+
+    .nav a:hover { color: #a8d4ff; }
+
+    /* --- Error --- */
+    #error {
+      display: none;
+      background: #3b1a1a;
+      border: 1px solid #E74C3C;
+      color: #f5a5a5;
+      padding: 16px 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    /* --- Main layout --- */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 36px;
+    }
+
+    /* --- Type List (left panel) --- */
+    .type-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tier-section { margin-bottom: 12px; }
+
+    .tier-label {
+      font-size: 10px;
+      font-weight: 400;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      margin-bottom: 4px;
+    }
+
+    .type-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      border: 1px solid transparent;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .type-card:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    .type-card.active {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .type-card .type-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .type-card .type-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .type-card .type-name {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .type-card .school-name {
+      font-size: 11px;
+      color: #888;
+      margin-top: 1px;
+    }
+
+    /* --- Detail Panel --- */
+    #detail {
+      background: #151528;
+      border: 1px solid #2a2a4e;
+      border-radius: 12px;
+      padding: 28px;
+      position: sticky;
+      top: 24px;
+      min-width: 340px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+
+    #detail .placeholder {
+      color: #444;
+      font-size: 14px;
+      text-align: center;
+      padding: 60px 16px;
+    }
+
+    .school-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a2a4e;
+    }
+
+    .school-header h2 {
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .school-header .school-subtitle {
+      font-size: 13px;
+      color: #888;
+      margin-left: 24px;
+    }
+
+    .school-header .type-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* --- Wizard Cards --- */
+    .wizard-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid #2a2a4e;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      transition: border-color 0.15s;
+    }
+
+    .wizard-card:hover {
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .wizard-card .role-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      padding: 3px 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .wizard-card .role-badge.head {
+      background: rgba(243, 156, 18, 0.2);
+      color: #f39c12;
+      border: 1px solid rgba(243, 156, 18, 0.3);
+    }
+
+    .wizard-card .role-badge.pupil {
+      background: rgba(122, 184, 245, 0.15);
+      color: #7ab8f5;
+      border: 1px solid rgba(122, 184, 245, 0.25);
+    }
+
+    .wizard-card .scientist-name {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .wizard-card .years {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+
+    .wizard-card .contribution {
+      font-size: 13px;
+      color: #ccc;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .wizard-card .school-of-thought {
+      font-size: 12px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.03);
+      border-left: 3px solid;
+    }
+
+    .wizard-card .school-of-thought .thought-label {
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 2px;
+      opacity: 0.7;
+    }
+
+    .wizard-card .school-of-thought .thought-name {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .pupils-label {
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      margin: 20px 0 10px;
+    }
+
+    /* --- Loading --- */
+    #loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+      font-size: 16px;
+    }
+
+    #loading .spinner {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid #333;
+      border-top-color: #7D3C98;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* --- Responsive --- */
+    @media (max-width: 1200px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+      #detail {
+        position: static;
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>WIZARD GAME &mdash; WIZARD SCHOOLS</h1>
+      <p>Scientists reimagined as elemental wizards &mdash; founders and philosophies</p>
+    </header>
+
+    <div class="nav">
+      <a href="./" style="color:#F4D03F">&larr; Design Tools</a> &middot;
+      <a href="counters.html">Counter Matrix</a>
+      <a href="combinations.html">Combinations</a>
+      <a href="effects.html">Effect Space</a>
+      <a href="effect-matrix.html">Effect Matrix</a>
+      <a href="effect-combos.html">Combo Effects</a>
+      <a href="scientists.html">Scientists</a>
+      <a href="equipment.html">Units &amp; Instruments</a>
+      <a href="prototype.html">Game Prototype</a>
+    </div>
+
+    <div id="error"></div>
+
+    <div id="loading">
+      <div class="spinner"></div>
+      <div>Loading database&hellip;</div>
+    </div>
+
+    <div id="content" style="display:none;">
+      <div class="main-layout">
+        <div class="type-list" id="type-list"></div>
+
+        <div id="detail">
+          <div class="placeholder">Select a type to view its wizard school</div>
+          <div id="detail-content" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sql.js@1/dist/sql-wasm.js"></script>
+  <script src="schools.js"></script>
+</body>
+</html>

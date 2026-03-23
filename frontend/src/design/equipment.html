@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wizard Game — Units &amp; Instruments</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0f0f1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 1800px; margin: 0 auto; }
+
+    /* --- Header --- */
+    header { text-align: center; margin-bottom: 28px; }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #E74C3C, #F4D03F, #27AE60, #2E86C1, #7D3C98);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    header p { color: #888; font-size: 14px; }
+
+    /* --- Navigation --- */
+    .nav {
+      text-align: center;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .nav a {
+      color: #7ab8f5;
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.15s;
+    }
+
+    .nav a:hover { color: #a8d4ff; }
+
+    /* --- Error --- */
+    #error {
+      display: none;
+      background: #3b1a1a;
+      border: 1px solid #E74C3C;
+      color: #f5a5a5;
+      padding: 16px 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    /* --- View Toggle --- */
+    .view-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .view-toggle button {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #888;
+      padding: 8px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .view-toggle button:hover {
+      background: rgba(255,255,255,0.08);
+      color: #ccc;
+    }
+
+    .view-toggle button.active {
+      background: rgba(122, 184, 245, 0.15);
+      border-color: rgba(122, 184, 245, 0.3);
+      color: #7ab8f5;
+    }
+
+    /* --- Tier Sections --- */
+    .tier-section { margin-bottom: 32px; }
+
+    .tier-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      padding-left: 4px;
+    }
+
+    /* --- Type Grid --- */
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 16px;
+    }
+
+    /* --- Type Card --- */
+    .type-card {
+      background: #151528;
+      border: 1px solid #2a2a4e;
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color 0.15s;
+    }
+
+    .type-card:hover {
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .type-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #2a2a4e;
+    }
+
+    .type-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .type-card-header .type-name {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .type-card-header .type-meta {
+      font-size: 11px;
+      color: #666;
+      margin-left: auto;
+    }
+
+    /* --- Item rows --- */
+    .item-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      margin-top: 14px;
+    }
+
+    .item-section-label:first-of-type { margin-top: 0; }
+
+    .item-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      background: rgba(255,255,255,0.02);
+      transition: background 0.1s;
+    }
+
+    .item-row:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .item-row.selected {
+      background: rgba(122, 184, 245, 0.08);
+      border-left: 3px solid;
+    }
+
+    .item-row.candidate {
+      opacity: 0.6;
+    }
+
+    .item-row.candidate:hover {
+      opacity: 0.85;
+    }
+
+    .item-name {
+      font-weight: 700;
+      font-size: 13px;
+      min-width: 0;
+    }
+
+    .item-symbol {
+      font-size: 12px;
+      font-weight: 700;
+      color: #7ab8f5;
+      background: rgba(122, 184, 245, 0.1);
+      padding: 1px 7px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+
+    .item-detail {
+      font-size: 12px;
+      color: #999;
+      line-height: 1.4;
+    }
+
+    .item-meta {
+      font-size: 11px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .item-role {
+      font-size: 11px;
+      color: #7ab8f5;
+      font-style: italic;
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .named-after {
+      font-size: 11px;
+      color: #888;
+    }
+
+    .no-items {
+      font-size: 12px;
+      color: #444;
+      font-style: italic;
+      padding: 8px 12px;
+    }
+
+    /* --- Loading --- */
+    #loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+      font-size: 16px;
+    }
+
+    #loading .spinner {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid #333;
+      border-top-color: #7D3C98;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* --- Responsive --- */
+    @media (max-width: 900px) {
+      body { padding: 12px; }
+      .type-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>WIZARD GAME &mdash; UNITS &amp; INSTRUMENTS</h1>
+      <p>Scientific units of measurement and instruments as magical equipment &mdash; compare and evaluate candidates per type</p>
+    </header>
+
+    <div class="nav">
+      <a href="./" style="color:#F4D03F">&larr; Design Tools</a> &middot;
+      <a href="counters.html">Counter Matrix</a>
+      <a href="combinations.html">Combinations</a>
+      <a href="effects.html">Effect Space</a>
+      <a href="effect-matrix.html">Effect Matrix</a>
+      <a href="effect-combos.html">Combo Effects</a>
+      <a href="schools.html">Wizard Schools</a>
+      <a href="scientists.html">Scientists</a>
+      <a href="prototype.html">Game Prototype</a>
+    </div>
+
+    <div id="error"></div>
+
+    <div id="loading">
+      <div class="spinner"></div>
+      <div>Loading database&hellip;</div>
+    </div>
+
+    <div id="content" style="display:none;">
+      <div class="view-toggle">
+        <button id="btn-both" class="active" onclick="setView('both')">Both</button>
+        <button id="btn-units" onclick="setView('units')">Units Only</button>
+        <button id="btn-instruments" onclick="setView('instruments')">Instruments Only</button>
+      </div>
+
+      <div id="grid-container"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sql.js@1/dist/sql-wasm.js"></script>
+  <script src="equipment.js"></script>
+</body>
+</html>

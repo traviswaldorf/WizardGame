@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__SQLite__list_tables",
+      "WebSearch",
+      "WebFetch(domain:www.ultraboardgames.com)",
+      "Bash(curl -s -L https://boardgame.io/documentation/)",
+      "Bash(curl -s -L https://raw.githubusercontent.com/boardgameio/boardgame.io/main/docs/documentation/tutorial.md)",
+      "Bash(curl -s -L https://raw.githubusercontent.com/boardgameio/boardgame.io/main/docs/documentation/phases.md)",
+      "Bash(curl -s \"https://api.github.com/repos/boardgameio/boardgame.io\")",
+      "Bash(curl -s https://api.github.com/repos/boardgameio/boardgame.io/releases?per_page=5)",
+      "Bash(curl -s -L \"https://raw.githubusercontent.com/boardgameio/boardgame.io/main/docs/documentation/sidebar.md\")",
+      "Bash(curl -s -L \"https://raw.githubusercontent.com/boardgameio/boardgame.io/main/docs/documentation/events.md\")",
+      "Bash(curl -s -L \"https://raw.githubusercontent.com/boardgameio/boardgame.io/main/docs/documentation/undo.md\")",
+      "Bash(curl -s -L \"https://raw.githubusercontent.com/boardgameio/boardgame.io/main/docs/documentation/plugins.md\")",
+      "Bash(curl:*)",
+      "Bash(grep -r \"Wingspan\\\\|Everdell\\\\|everdell\" /c/Users/travi/source/repos/WizardGame --include=*.md --include=*.js)",
+      "Bash(wc -l /c/Users/travi/source/repos/WizardGame/frontend/src/**/*.js)",
+      "Bash(find /c/Users/travi/source/repos/WizardGame/sdlc -type f -name *.md)",
+      "Bash(grep -r \"TODO\\\\|FIXME\\\\|BUG\\\\|TBD\" /c/Users/travi/source/repos/WizardGame/frontend/src --include=*.js)",
+      "WebFetch(domain:balatrowiki.org)",
+      "WebFetch(domain:alexanderwales.com)"
+    ]
+  }
+}

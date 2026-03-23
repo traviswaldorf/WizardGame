@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "SQLite": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "C:/Users/travi/source/repos/WizardGame/database:/mcp",
+        "mcp/sqlite",
+        "--db-path",
+        "/mcp/wizard_game.db"
+      ]
+    }
+  }
+}

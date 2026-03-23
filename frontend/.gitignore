@@ -1,0 +1,4 @@
+node_modules/
+dist/
+public/sql-wasm.wasm
+public/wizard_game.db

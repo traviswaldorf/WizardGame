@@ -1,0 +1,19 @@
+{
+  "name": "wizard-game-sandbox",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "copy-assets": "cp ../database/wizard_game.db public/",
+    "dev": "npm run copy-assets && vite",
+    "build": "npm run copy-assets && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "boardgame.io": "^0.50.2",
+    "konva": "^9.3.18"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}

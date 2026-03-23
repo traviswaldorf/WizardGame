@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wizard Game — Type Combinations</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0f0f1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 1800px; margin: 0 auto; }
+
+    /* --- Header --- */
+    header { text-align: center; margin-bottom: 28px; }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #E74C3C, #F4D03F, #27AE60, #2E86C1, #7D3C98);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    header p { color: #888; font-size: 14px; }
+
+    /* --- Nav --- */
+    .nav { text-align: center; margin-bottom: 20px; }
+    .nav a {
+      color: #7ab8f5;
+      text-decoration: none;
+      font-size: 13px;
+      margin: 0 12px;
+    }
+    .nav a:hover { text-decoration: underline; }
+
+    /* --- Error --- */
+    #error {
+      display: none;
+      background: #3b1a1a;
+      border: 1px solid #E74C3C;
+      color: #f5a5a5;
+      padding: 16px 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    /* --- Legend --- */
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .legend-swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .cat-badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    /* Nature badges (what it IS) */
+    .cat-spell       { background: #1a3a6b; color: #7ab8f5; }
+    .cat-element     { background: #1a4a2e; color: #5ddb8a; }
+    .cat-phenomenon  { background: #3a1a5e; color: #b88af5; }
+    .cat-material    { background: #4a3a1a; color: #f5c87a; }
+    .cat-effect      { background: #4a1a1a; color: #f58a7a; }
+
+    /* Mechanic badges (which game system) */
+    .mech-spell      { background: #1a3a6b; color: #7ab8f5; border: 1px solid #3a5a8b; }
+    .mech-storm      { background: #2a1a4e; color: #c88af5; border: 1px solid #4a3a6e; }
+    .mech-super_power { background: #4a3a0a; color: #f5d84a; border: 1px solid #6a5a2a; }
+
+    /* Filter rows */
+    .filter-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .filter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      min-width: 70px;
+      text-align: right;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 6px;
+    }
+
+    .filter-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #aaa;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: #ddd;
+    }
+
+    .filter-btn.active {
+      background: rgba(99, 110, 255, 0.3);
+      border-color: rgba(99, 110, 255, 0.6);
+      color: #fff;
+    }
+
+    .filter-btn .count-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 11px;
+      margin-left: 6px;
+    }
+
+    .process-tag {
+      display: inline-block;
+      font-size: 11px;
+      color: #8a8;
+      font-style: italic;
+      margin-top: 2px;
+    }
+
+    /* --- Main layout: matrix + detail side by side --- */
+    .main-layout {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 36px;
+    }
+
+    /* --- Matrix --- */
+    .matrix-wrap {
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    #matrix {
+      border-collapse: separate;
+      border-spacing: 2px;
+      margin: 0 auto;
+    }
+
+    #matrix th {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 2px;
+      user-select: none;
+    }
+
+    #matrix th.corner { background: transparent; }
+
+    #matrix th.col-header {
+      writing-mode: vertical-lr;
+      transform: rotate(180deg);
+      height: 110px;
+      text-align: left;
+      padding-bottom: 8px;
+      cursor: pointer;
+      border-radius: 4px 4px 0 0;
+      transition: background 0.15s;
+    }
+
+    #matrix th.col-header:hover { background: rgba(255,255,255,0.08); }
+
+    #matrix th.row-header {
+      text-align: right;
+      padding-right: 10px;
+      white-space: nowrap;
+      cursor: pointer;
+      border-radius: 4px 0 0 4px;
+      transition: background 0.15s;
+    }
+
+    #matrix th.row-header:hover { background: rgba(255,255,255,0.08); }
+
+    #matrix th.tier-label {
+      font-size: 10px;
+      font-weight: 400;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: right;
+      padding-right: 10px;
+      vertical-align: middle;
+    }
+
+    #matrix td {
+      width: 44px;
+      height: 44px;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: box-shadow 0.12s, border-color 0.12s;
+      position: relative;
+      border: 2px solid transparent;
+    }
+
+    #matrix td:not(.empty):hover {
+      border-color: rgba(255,255,255,0.7);
+      box-shadow: inset 0 0 8px rgba(255,255,255,0.15);
+    }
+
+    #matrix td.self {
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(99,110,255,0.08),
+        rgba(99,110,255,0.08) 4px,
+        transparent 4px,
+        transparent 8px
+      );
+    }
+    #matrix td.self.has-combos {
+      background: rgba(99, 110, 255, 0.35);
+    }
+
+    #matrix td.c0 { background: rgba(255,255,255, 0.02); color: #333; }
+    #matrix td.c1 { background: rgba(99, 110, 255, 0.25); color: #aab; }
+    #matrix td.c2 { background: rgba(99, 110, 255, 0.40); color: #dde; }
+    #matrix td.c3 { background: rgba(99, 110, 255, 0.55); color: #fff; }
+    #matrix td.c4 { background: rgba(99, 110, 255, 0.75); color: #fff; }
+    #matrix td.empty { background: rgba(255,255,255, 0.02); cursor: default; }
+
+    /* --- Axis Labels --- */
+    .axis-labels {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 32px;
+      font-size: 13px;
+      color: #888;
+      font-style: italic;
+    }
+
+    /* --- Tooltip --- */
+    #tooltip {
+      position: fixed;
+      background: #1e1e36;
+      border: 1px solid #3a3a5e;
+      border-radius: 8px;
+      padding: 14px 18px;
+      max-width: 400px;
+      font-size: 13px;
+      line-height: 1.5;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+      display: none;
+    }
+
+    #tooltip .tt-header {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    #tooltip .combo-preview {
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 12px;
+    }
+
+    #tooltip .combo-preview:last-child { border-bottom: none; }
+
+    #tooltip .combo-name { font-weight: 600; }
+
+    /* --- Detail Panel (side panel) --- */
+    #detail {
+      background: #151528;
+      border: 1px solid #2a2a4e;
+      border-radius: 12px;
+      padding: 20px;
+      position: sticky;
+      top: 24px;
+      min-width: 340px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+
+    #detail h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.3;
+    }
+
+    #detail .placeholder {
+      color: #444;
+      font-size: 14px;
+      text-align: center;
+      padding: 60px 16px;
+    }
+
+    .combo-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 6px;
+      transition: background 0.1s;
+    }
+
+    .combo-card:hover { background: rgba(255,255,255,0.06); }
+
+    .combo-card .combo-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .combo-card .combo-title .name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .combo-card .recipe {
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #ccc;
+    }
+
+    .combo-card .recipe .amount {
+      font-weight: 700;
+    }
+
+    .combo-card .recipe .plus {
+      color: #666;
+      margin: 0 4px;
+    }
+
+    .combo-card .recipe .arrow {
+      color: #555;
+      margin: 0 6px;
+    }
+
+    .combo-card .desc {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .no-combos {
+      text-align: center;
+      padding: 40px 16px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .no-combos .prompt {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #444;
+    }
+
+    /* --- Stats --- */
+    .stats { margin-bottom: 36px; }
+
+    .stats h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+      text-align: center;
+      color: #ccc;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 100px 40px 1fr;
+      gap: 4px 0;
+      align-items: center;
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 13px;
+    }
+
+    .stats-grid .type-label {
+      text-align: right;
+      padding-right: 12px;
+      font-weight: 600;
+    }
+
+    .stats-grid .count {
+      text-align: center;
+      font-weight: 700;
+      color: #aab;
+    }
+
+    .stats-grid .bar-wrap {
+      display: flex;
+    }
+
+    .stats-grid .bar {
+      height: 20px;
+      border-radius: 3px;
+      background: rgba(99, 110, 255, 0.6);
+      transition: width 0.4s ease;
+    }
+
+    /* --- Loading --- */
+    #loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+      font-size: 16px;
+    }
+
+    #loading .spinner {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid #333;
+      border-top-color: #636eff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 1200px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+      #detail {
+        position: static;
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>WIZARD GAME &mdash; TYPE COMBINATIONS</h1>
+      <p>All type-pair interactions &mdash; spells, storms, and super powers grounded in real science</p>
+    </header>
+
+    <div class="nav">
+      <a href="./" style="color:#F4D03F">&larr; Design Tools</a> &middot;
+      <a href="counters.html">Counter Matrix</a>
+      <a href="effects.html">Effect Space</a>
+      <a href="effect-matrix.html">Effect Matrix</a>
+      <a href="effect-combos.html">Combo Effects</a>
+      <a href="schools.html">Wizard Schools</a>
+      <a href="scientists.html">Scientists</a>
+      <a href="equipment.html">Units &amp; Instruments</a>
+      <a href="prototype.html">Game Prototype</a>
+    </div>
+
+    <div id="error"></div>
+
+    <div id="loading">
+      <div class="spinner"></div>
+      <div>Loading database&hellip;</div>
+    </div>
+
+    <div id="content" style="display:none;">
+      <div class="filter-row">
+        <span class="filter-label">Mechanic:</span>
+        <div class="filter-bar" id="filter-mechanic">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="spell">Spells</button>
+          <button class="filter-btn" data-filter="storm">Storms</button>
+          <button class="filter-btn" data-filter="super_power">Super Powers</button>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <span class="filter-label">Nature:</span>
+        <div class="filter-bar" id="filter-nature">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="spell">Spell</button>
+          <button class="filter-btn" data-filter="element">Element</button>
+          <button class="filter-btn" data-filter="phenomenon">Phenomenon</button>
+          <button class="filter-btn" data-filter="material">Material</button>
+          <button class="filter-btn" data-filter="effect">Effect</button>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:rgba(99,110,255,0.25)"></div>
+          <span>1 idea</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:rgba(99,110,255,0.55)"></div>
+          <span>2&ndash;3</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:rgba(99,110,255,0.75)"></div>
+          <span>4+</span>
+        </div>
+      </div>
+
+      <div class="axis-labels">
+        <span>Click any cell to see combination ideas for that type pair</span>
+      </div>
+
+      <div class="main-layout">
+        <div class="matrix-wrap">
+          <table id="matrix"></table>
+        </div>
+
+        <div id="detail">
+          <div class="placeholder">Click any cell in the matrix to see combination ideas</div>
+          <h2 id="detail-title" style="display:none"></h2>
+          <div id="detail-combos"></div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <h2>Ideas Per Type</h2>
+        <div class="stats-grid" id="stats-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sql.js@1/dist/sql-wasm.js"></script>
+  <script src="combinations.js"></script>
+</body>
+</html>

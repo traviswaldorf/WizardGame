@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wizard Game — Effect Space</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0f0f1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 1800px; margin: 0 auto; }
+
+    /* --- Header --- */
+    header { text-align: center; margin-bottom: 28px; }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #E74C3C, #F4D03F, #27AE60, #2E86C1, #7D3C98);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    header p { color: #888; font-size: 14px; }
+
+    /* --- Nav --- */
+    .nav { text-align: center; margin-bottom: 20px; }
+    .nav a {
+      color: #7ab8f5;
+      text-decoration: none;
+      font-size: 13px;
+      margin: 0 12px;
+    }
+    .nav a:hover { text-decoration: underline; }
+
+    /* --- Error --- */
+    #error {
+      display: none;
+      background: #3b1a1a;
+      border: 1px solid #E74C3C;
+      color: #f5a5a5;
+      padding: 16px 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    /* --- Summary bar --- */
+    .summary-bar {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .summary-stat {
+      text-align: center;
+    }
+
+    .summary-stat .value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .summary-stat .label {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    /* --- Filter rows --- */
+    .filter-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .filter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      min-width: 90px;
+      text-align: right;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #aaa;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: #ddd;
+    }
+
+    .filter-btn.active {
+      background: rgba(99, 110, 255, 0.3);
+      border-color: rgba(99, 110, 255, 0.6);
+      color: #fff;
+    }
+
+    .filter-btn .count-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 11px;
+      margin-left: 6px;
+    }
+
+    /* --- Category colors --- */
+    .cat-color-aggro      { color: #E74C3C; }
+    .cat-color-control    { color: #2E86C1; }
+    .cat-color-search     { color: #7D3C98; }
+    .cat-color-growth     { color: #27AE60; }
+    .cat-color-defensive  { color: #F4D03F; }
+    .cat-color-unassigned { color: #888; }
+
+    .cat-border-aggro      { border-left-color: #E74C3C; }
+    .cat-border-control    { border-left-color: #2E86C1; }
+    .cat-border-search     { border-left-color: #7D3C98; }
+    .cat-border-growth     { border-left-color: #27AE60; }
+    .cat-border-defensive  { border-left-color: #F4D03F; }
+    .cat-border-unassigned { border-left-color: #888; }
+
+    /* Effect class badges */
+    .class-badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 1px 7px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    .class-instant   { background: #1a3a6b; color: #7ab8f5; }
+    .class-status    { background: #3a1a5e; color: #b88af5; }
+    .class-dot       { background: #4a1a1a; color: #f58a7a; }
+    .class-permanent { background: #1a4a2e; color: #5ddb8a; }
+    .class-aura      { background: #4a3a1a; color: #f5c87a; }
+
+    /* --- Main layout --- */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 36px;
+      margin-top: 24px;
+    }
+
+    /* --- Tree view --- */
+    .tree-view {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .category-group {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-left: 3px solid #888;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .category-header {
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.15s;
+      user-select: none;
+    }
+
+    .category-header:hover { background: rgba(255,255,255,0.04); }
+
+    .category-header .caret {
+      font-size: 10px;
+      color: #666;
+      transition: transform 0.2s;
+      width: 12px;
+    }
+
+    .category-header.collapsed .caret { transform: rotate(-90deg); }
+
+    .category-header .cat-name {
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+
+    .category-header .cat-count {
+      font-size: 12px;
+      color: #666;
+      margin-left: auto;
+    }
+
+    .category-body {
+      padding: 0 8px 8px;
+    }
+
+    .category-body.hidden { display: none; }
+
+    .archetype-section {
+      margin-bottom: 8px;
+    }
+
+    .archetype-header {
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ccc;
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.12s;
+    }
+
+    .archetype-header:hover { background: rgba(255,255,255,0.05); }
+    .archetype-header.selected { background: rgba(99,110,255,0.2); }
+
+    .archetype-header .arch-name { text-transform: capitalize; }
+
+    .archetype-header .link-count {
+      font-size: 11px;
+      color: #666;
+      margin-left: auto;
+    }
+
+    .expression-list {
+      padding: 0 0 0 24px;
+    }
+
+    .expression-card {
+      padding: 8px 12px;
+      margin: 2px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      transition: background 0.12s;
+    }
+
+    .expression-card:hover { background: rgba(255,255,255,0.04); }
+    .expression-card.selected { background: rgba(99,110,255,0.15); }
+
+    .expression-card .expr-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .expression-card .expr-desc {
+      font-size: 11px;
+      color: #888;
+      flex-basis: 100%;
+    }
+
+    .expression-card .selected-marker {
+      color: #5ddb8a;
+      font-size: 12px;
+    }
+
+    /* --- Detail Panel --- */
+    #detail {
+      background: #151528;
+      border: 1px solid #2a2a4e;
+      border-radius: 12px;
+      padding: 20px;
+      position: sticky;
+      top: 24px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+
+    #detail h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+
+    #detail .placeholder {
+      color: #444;
+      font-size: 14px;
+      text-align: center;
+      padding: 60px 16px;
+    }
+
+    .detail-section {
+      margin-bottom: 16px;
+    }
+
+    .detail-section h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .type-dot-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .type-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .type-dot .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .type-dot.missing {
+      opacity: 0.3;
+      border-style: dashed;
+    }
+
+    .role-badge {
+      font-size: 10px;
+      padding: 0 5px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .role-primary { background: rgba(99,110,255,0.3); color: #aab8ff; }
+    .role-secondary { background: rgba(255,255,255,0.08); color: #aaa; }
+    .role-situational { background: rgba(255,255,255,0.04); color: #666; }
+
+    .combo-link-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .combo-link-card .combo-name { font-weight: 600; }
+
+    .empty-state {
+      color: #555;
+      font-size: 13px;
+      font-style: italic;
+      padding: 8px 0;
+    }
+
+    /* --- Loading --- */
+    #loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+      font-size: 16px;
+    }
+
+    #loading .spinner {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid #333;
+      border-top-color: #636eff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 1200px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+      #detail {
+        position: static;
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>WIZARD GAME &mdash; EFFECT SPACE</h1>
+      <p>Effect taxonomy &mdash; archetypes, expressions, and type coverage</p>
+    </header>
+
+    <div class="nav">
+      <a href="./" style="color:#F4D03F">&larr; Design Tools</a> &middot;
+      <a href="counters.html">Counter Matrix</a>
+      <a href="combinations.html">Combinations</a>
+      <a href="effect-matrix.html">Effect Matrix</a>
+      <a href="effect-combos.html">Combo Effects</a>
+      <a href="schools.html">Wizard Schools</a>
+      <a href="scientists.html">Scientists</a>
+      <a href="equipment.html">Units &amp; Instruments</a>
+      <a href="prototype.html">Game Prototype</a>
+    </div>
+
+    <div id="error"></div>
+
+    <div id="loading">
+      <div class="spinner"></div>
+      <div>Loading database&hellip;</div>
+    </div>
+
+    <div id="content" style="display:none;">
+      <div class="summary-bar" id="summary-bar"></div>
+
+      <div class="filter-row">
+        <span class="filter-label">Category:</span>
+        <div class="filter-bar" id="filter-category">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="aggro">Aggro</button>
+          <button class="filter-btn" data-filter="control">Control</button>
+          <button class="filter-btn" data-filter="search">Search</button>
+          <button class="filter-btn" data-filter="growth">Growth</button>
+          <button class="filter-btn" data-filter="defensive">Defensive</button>
+          <button class="filter-btn" data-filter="unassigned">Unassigned</button>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <span class="filter-label">Effect Class:</span>
+        <div class="filter-bar" id="filter-class">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="instant">Instant</button>
+          <button class="filter-btn" data-filter="status">Status</button>
+          <button class="filter-btn" data-filter="dot">DoT</button>
+          <button class="filter-btn" data-filter="permanent">Permanent</button>
+          <button class="filter-btn" data-filter="aura">Aura</button>
+        </div>
+      </div>
+
+      <div class="main-layout">
+        <div class="tree-view" id="tree-view"></div>
+
+        <div id="detail">
+          <div class="placeholder">Click any archetype or expression to see details</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sql.js@1/dist/sql-wasm.js"></script>
+  <script src="effects.js"></script>
+</body>
+</html>

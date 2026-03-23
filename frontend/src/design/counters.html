@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wizard Game — Type Counter Matrix</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0f0f1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 1800px; margin: 0 auto; }
+
+    /* --- Header --- */
+    header { text-align: center; margin-bottom: 28px; }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #E74C3C, #F4D03F, #27AE60, #2E86C1, #7D3C98);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    header p { color: #888; font-size: 14px; }
+
+    /* --- Error --- */
+    #error {
+      display: none;
+      background: #3b1a1a;
+      border: 1px solid #E74C3C;
+      color: #f5a5a5;
+      padding: 16px 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    /* --- Legend --- */
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .legend-swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* --- Main layout: matrix + detail side by side --- */
+    .main-layout {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 36px;
+    }
+
+    /* --- Matrix --- */
+    .matrix-wrap {
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    #matrix {
+      border-collapse: separate;
+      border-spacing: 2px;
+      margin: 0 auto;
+    }
+
+    #matrix th {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 2px;
+      user-select: none;
+    }
+
+    #matrix th.corner { background: transparent; }
+
+    #matrix th.col-header {
+      writing-mode: vertical-lr;
+      transform: rotate(180deg);
+      height: 110px;
+      text-align: left;
+      padding-bottom: 8px;
+      cursor: pointer;
+      border-radius: 4px 4px 0 0;
+      transition: background 0.15s;
+    }
+
+    #matrix th.col-header:hover { background: rgba(255,255,255,0.08); }
+
+    #matrix th.row-header {
+      text-align: right;
+      padding-right: 10px;
+      white-space: nowrap;
+      cursor: pointer;
+      border-radius: 4px 0 0 4px;
+      transition: background 0.15s;
+    }
+
+    #matrix th.row-header:hover { background: rgba(255,255,255,0.08); }
+
+    #matrix th.tier-label {
+      font-size: 10px;
+      font-weight: 400;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: right;
+      padding-right: 10px;
+      vertical-align: middle;
+    }
+
+    #matrix td {
+      width: 44px;
+      height: 44px;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: default;
+      border-radius: 4px;
+      transition: box-shadow 0.12s, border-color 0.12s;
+      position: relative;
+      border: 2px solid transparent;
+    }
+
+    #matrix td:not(.empty):hover {
+      border-color: rgba(255,255,255,0.7);
+      box-shadow: inset 0 0 8px rgba(255,255,255,0.15);
+    }
+
+    #matrix td.self {
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.03),
+        rgba(255,255,255,0.03) 4px,
+        transparent 4px,
+        transparent 8px
+      );
+    }
+
+    #matrix td.g3 { background: rgba(46, 204, 113, 0.75); color: #fff; }
+    #matrix td.g2 { background: rgba(241, 196, 15, 0.65); color: #fff; }
+    #matrix td.g1 { background: rgba(231, 76, 60, 0.45); color: #ddd; }
+    #matrix td.empty { background: rgba(255,255,255, 0.02); }
+    #matrix td.confirmed { box-shadow: inset 0 0 0 2px #2ecc71; }
+
+    #matrix .highlight-row td,
+    #matrix .highlight-row th { background-color: rgba(255,255,255,0.06) !important; }
+    #matrix td.highlight-col { background-color: rgba(255,255,255,0.06) !important; }
+
+    #matrix .mutual-badge {
+      position: absolute;
+      top: 2px;
+      right: 3px;
+      font-size: 8px;
+      opacity: 0.8;
+    }
+
+    /* --- Axis Labels --- */
+    .axis-labels {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 32px;
+      font-size: 13px;
+      color: #888;
+    }
+
+    .axis-labels span { font-style: italic; }
+
+    /* --- Tooltip --- */
+    #tooltip {
+      position: fixed;
+      background: #1e1e36;
+      border: 1px solid #3a3a5e;
+      border-radius: 8px;
+      padding: 14px 18px;
+      max-width: 380px;
+      font-size: 13px;
+      line-height: 1.5;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+      display: none;
+    }
+
+    #tooltip .tt-header {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    #tooltip .tt-stars { margin-bottom: 4px; }
+    #tooltip .tt-stars .filled { color: #f1c40f; }
+    #tooltip .tt-stars .empty-star { color: #444; }
+
+    #tooltip .tt-mechanism { color: #ccc; }
+
+    #tooltip .tt-badges {
+      margin-top: 6px;
+      display: flex;
+      gap: 6px;
+    }
+
+    #tooltip .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    #tooltip .badge.mutual { background: #2d4a7a; color: #7ab8f5; }
+    #tooltip .badge.confirmed { background: #1a4a2e; color: #5ddb8a; }
+
+    /* --- Detail Panel (side panel) --- */
+    #detail {
+      background: #151528;
+      border: 1px solid #2a2a4e;
+      border-radius: 12px;
+      padding: 20px;
+      position: sticky;
+      top: 24px;
+      min-width: 340px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+
+    #detail h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.3;
+    }
+
+    #detail .placeholder {
+      color: #444;
+      font-size: 14px;
+      text-align: center;
+      padding: 60px 16px;
+    }
+
+    #detail .type-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    #detail .columns {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    #detail .col h3 {
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    #detail .counter-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-bottom: 3px;
+      font-size: 12px;
+      transition: background 0.1s;
+      flex-wrap: wrap;
+    }
+
+    #detail .counter-row:hover { background: rgba(255,255,255,0.05); }
+
+    #detail .counter-row .type-name {
+      font-weight: 700;
+      min-width: 80px;
+    }
+
+    #detail .counter-row .stars {
+      font-size: 11px;
+      min-width: 40px;
+    }
+
+    #detail .counter-row .mechanism {
+      color: #999;
+      font-size: 11px;
+    }
+
+    /* --- Stats --- */
+    .stats { margin-bottom: 36px; }
+
+    .stats h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+      text-align: center;
+      color: #ccc;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 100px 1fr 40px 40px 1fr;
+      gap: 4px 0;
+      align-items: center;
+      max-width: 900px;
+      margin: 0 auto;
+      font-size: 13px;
+    }
+
+    .stats-grid .type-label {
+      text-align: right;
+      padding-right: 12px;
+      font-weight: 600;
+    }
+
+    .stats-grid .bar-left {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .stats-grid .bar-right {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .stats-grid .bar {
+      height: 20px;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    .stats-grid .bar.weakness { background: rgba(231, 76, 60, 0.7); }
+    .stats-grid .bar.resistance { background: rgba(46, 204, 113, 0.7); }
+
+    .stats-grid .count {
+      text-align: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .stats-header {
+      display: grid;
+      grid-template-columns: 100px 1fr 40px 40px 1fr;
+      max-width: 900px;
+      margin: 0 auto 8px;
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .stats-header .left { text-align: right; padding-right: 12px; }
+    .stats-header .right { text-align: left; }
+    .stats-header .spacer { grid-column: 1; }
+
+    /* --- Loading --- */
+    #loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+      font-size: 16px;
+    }
+
+    #loading .spinner {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid #333;
+      border-top-color: #7D3C98;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* --- Responsive --- */
+    @media (max-width: 1200px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+      #detail {
+        position: static;
+        max-height: none;
+      }
+      #detail .columns {
+        flex-direction: row;
+        gap: 24px;
+      }
+      #detail .columns .col { flex: 1; }
+    }
+
+    @media (max-width: 900px) {
+      #detail .columns { flex-direction: column; }
+      body { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>WIZARD GAME &mdash; TYPE COUNTER MATRIX</h1>
+      <p>Candidate counter relationships ranked by physics grounding</p>
+    </header>
+
+    <div style="text-align:center;margin-bottom:20px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap">
+      <a href="combinations.html" style="color:#7ab8f5;text-decoration:none;font-size:13px">Combinations</a>
+      <a href="effects.html" style="color:#7ab8f5;text-decoration:none;font-size:13px">Effect Space</a>
+      <a href="effect-matrix.html" style="color:#7ab8f5;text-decoration:none;font-size:13px">Effect Matrix</a>
+      <a href="effect-combos.html" style="color:#7ab8f5;text-decoration:none;font-size:13px">Combo Effects</a>
+      <a href="schools.html" style="color:#7ab8f5;text-decoration:none;font-size:13px">Wizard Schools</a>
+      <a href="scientists.html" style="color:#7ab8f5;text-decoration:none;font-size:13px">Scientists</a>
+    </div>
+
+    <div id="error"></div>
+
+    <div id="loading">
+      <div class="spinner"></div>
+      <div>Loading database&hellip;</div>
+    </div>
+
+    <div id="content" style="display:none;">
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:rgba(46,204,113,0.75)"></div>
+          <span>&#9733;&#9733;&#9733; Hard Physics</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:rgba(241,196,15,0.65)"></div>
+          <span>&#9733;&#9733;&#9734; Soft Physics</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:rgba(231,76,60,0.45)"></div>
+          <span>&#9733;&#9734;&#9734; Thematic</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:rgba(255,255,255,0.02); border-color:rgba(255,255,255,0.15)"></div>
+          <span>No relationship</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:rgba(46,204,113,0.75); box-shadow: inset 0 0 0 2px #2ecc71"></div>
+          <span>Confirmed</span>
+        </div>
+        <div class="legend-item">
+          <span style="font-size:11px; color:#7ab8f5">&#8644;</span>
+          <span>Mutual counter</span>
+        </div>
+      </div>
+
+      <div class="axis-labels">
+        <span>&darr; Rows = Source type (does the countering)</span>
+        <span>&rarr; Columns = Target type (gets countered)</span>
+      </div>
+
+      <div class="main-layout">
+        <div class="matrix-wrap">
+          <table id="matrix"></table>
+        </div>
+
+        <div id="detail">
+          <div class="placeholder">Click any type name to see its weaknesses and resistances</div>
+          <h2 id="detail-title" style="display:none"></h2>
+          <div class="columns" style="display:none">
+            <div class="col">
+              <h3>Resistances (Counters)</h3>
+              <div id="detail-resistances"></div>
+            </div>
+            <div class="col">
+              <h3>Weaknesses (Countered By)</h3>
+              <div id="detail-weaknesses"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <h2>Balance Overview</h2>
+        <div class="stats-header">
+          <div></div>
+          <div class="left">&#8592; Weaknesses</div>
+          <div></div>
+          <div></div>
+          <div class="right">Resistances &#8594;</div>
+        </div>
+        <div class="stats-grid" id="stats-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sql.js@1/dist/sql-wasm.js"></script>
+  <script src="counters.js"></script>
+</body>
+</html>

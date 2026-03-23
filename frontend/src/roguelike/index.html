@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wizard Game — Roguelike</title>
+  <link rel="stylesheet" href="/src/shared/styles.css" />
+  <style>
+    #toolbar {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 12px;
+      background: #16213e;
+      border-bottom: 1px solid #333;
+      font-size: 13px;
+      color: #e0e0e0;
+      flex-wrap: wrap;
+    }
+    .toolbar-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 8px;
+      border-right: 1px solid #333;
+    }
+    .toolbar-group:last-child { border-right: none; }
+    .stat { font-weight: bold; }
+    .stat-hp { color: #E74C3C; }
+    .stat-energy { color: #F4D03F; }
+    .stat-gold { color: #F39C12; }
+    .stat-label { color: #888; margin-right: 2px; }
+    .phase-badge {
+      background: #2E86C1;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    #back-link {
+      color: #F4D03F;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    #back-link:hover { text-decoration: underline; }
+
+    /* Debug panel */
+    #debug-toggle {
+      background: #333;
+      color: #F39C12;
+      border: 1px solid #555;
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    #debug-toggle:hover { background: #444; }
+    #debug-panel {
+      display: none;
+      position: fixed;
+      top: 42px;
+      right: 8px;
+      background: #111;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 10px;
+      z-index: 1000;
+      font-size: 12px;
+      color: #ccc;
+      min-width: 180px;
+    }
+    #debug-panel h3 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: #F39C12;
+      border-bottom: 1px solid #333;
+      padding-bottom: 4px;
+    }
+    .debug-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .debug-row label { flex: 1; }
+    .debug-btn {
+      background: #222;
+      color: #ccc;
+      border: 1px solid #555;
+      padding: 2px 8px;
+      margin: 0 2px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    .debug-btn:hover { background: #444; }
+    .debug-btn.danger { color: #E74C3C; border-color: #E74C3C; }
+    .debug-btn.danger:hover { background: #3a1515; }
+    .debug-btn.success { color: #27AE60; border-color: #27AE60; }
+    .debug-btn.success:hover { background: #153a1a; }
+    .debug-btn.kill { color: #fff; background: #C0392B; border-color: #C0392B; }
+    .debug-btn.kill:hover { background: #E74C3C; }
+    .debug-separator {
+      border-top: 1px solid #333;
+      margin: 8px 0;
+    }
+
+    /* Start screen config */
+    .config-group {
+      margin-top: 12px;
+      text-align: left;
+      display: inline-block;
+    }
+    .config-group label {
+      display: block;
+      margin-bottom: 4px;
+      color: #999;
+      font-size: 13px;
+    }
+    .config-group select, .config-group input {
+      background: #16213e;
+      color: #e0e0e0;
+      border: 1px solid #444;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">Roguelike loading...</div>
+
+  <div id="start-screen" style="display:none;">
+    <div class="start-content">
+      <h1>Roguelike Runs</h1>
+      <p>Slay the Spire-style school progression</p>
+      <div class="start-form">
+        <div class="config-group">
+          <label for="floor-count">Floors before boss:</label>
+          <select id="floor-count">
+            <option value="3">3 (quick test)</option>
+            <option value="5">5 (short)</option>
+            <option value="8">8 (medium)</option>
+            <option value="15" selected>15 (full)</option>
+          </select>
+        </div>
+        <button id="start-btn">Start Run</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toolbar">
+    <a id="back-link" href="/">&#8592; Prototypes</a>
+
+    <span class="toolbar-group">
+      <span id="phase-badge" class="phase-badge">map</span>
+    </span>
+
+    <span class="toolbar-group">
+      <span class="stat-label">HP:</span>
+      <span id="stat-hp" class="stat stat-hp">50/50</span>
+    </span>
+
+    <span class="toolbar-group" id="stat-energy-group">
+      <span class="stat-label">Energy:</span>
+      <span id="stat-energy" class="stat stat-energy"></span>
+    </span>
+
+    <span class="toolbar-group">
+      <span class="stat-label">Gold:</span>
+      <span id="stat-gold" class="stat stat-gold">0</span>
+    </span>
+
+    <span class="toolbar-group">
+      <span class="stat-label">Act:</span>
+      <span id="stat-act" class="stat">1</span>
+    </span>
+
+    <span class="toolbar-group">
+      <button id="debug-toggle">Debug</button>
+    </span>
+  </div>
+
+  <div id="debug-panel">
+    <h3>Debug Tools</h3>
+    <div class="debug-row">
+      <label>Gold</label>
+      <button class="debug-btn danger" data-debug="gold" data-amount="-50">-50</button>
+      <button class="debug-btn danger" data-debug="gold" data-amount="-10">-10</button>
+      <button class="debug-btn success" data-debug="gold" data-amount="10">+10</button>
+      <button class="debug-btn success" data-debug="gold" data-amount="50">+50</button>
+      <button class="debug-btn success" data-debug="gold" data-amount="100">+100</button>
+    </div>
+    <div class="debug-row">
+      <label>HP</label>
+      <button class="debug-btn danger" data-debug="hp" data-amount="-10">-10</button>
+      <button class="debug-btn danger" data-debug="hp" data-amount="-5">-5</button>
+      <button class="debug-btn success" data-debug="hp" data-amount="5">+5</button>
+      <button class="debug-btn success" data-debug="hp" data-amount="10">+10</button>
+      <button class="debug-btn success" data-debug="hp" data-amount="999">Full</button>
+    </div>
+    <div class="debug-row">
+      <label>Max HP</label>
+      <button class="debug-btn danger" data-debug="maxhp" data-amount="-10">-10</button>
+      <button class="debug-btn success" data-debug="maxhp" data-amount="10">+10</button>
+    </div>
+    <div class="debug-row">
+      <label>Energy</label>
+      <button class="debug-btn danger" data-debug="energy" data-amount="-1">-1</button>
+      <button class="debug-btn success" data-debug="energy" data-amount="1">+1</button>
+    </div>
+    <div class="debug-separator"></div>
+    <div class="debug-row">
+      <label>Combat</label>
+      <button class="debug-btn kill" data-debug="kill">Kill Enemy</button>
+    </div>
+    <div class="debug-separator"></div>
+    <div class="debug-row">
+      <button class="debug-btn" data-debug="restart" style="width:100%">Restart Run</button>
+    </div>
+  </div>
+
+  <div id="app"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sql.js@1/dist/sql-wasm.js"></script>
+  <script type="module" src="/src/roguelike/main.js"></script>
+</body>
+</html>

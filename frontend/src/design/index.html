@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wizard Game — Design Tools</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0f0f1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 48px 24px;
+      min-height: 100vh;
+    }
+    .launcher {
+      max-width: 800px;
+      width: 100%;
+    }
+    .back-link {
+      color: #F4D03F;
+      text-decoration: none;
+      font-size: 13px;
+      display: inline-block;
+      margin-bottom: 24px;
+    }
+    .back-link:hover { text-decoration: underline; }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #E74C3C, #F4D03F, #27AE60, #2E86C1, #7D3C98);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      color: #888;
+      text-align: center;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      padding-left: 4px;
+    }
+    .tools {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .tool-link {
+      display: block;
+      padding: 16px 18px;
+      background: #16213e;
+      border: 1px solid #2a2a4e;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #e0e0e0;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .tool-link:hover {
+      border-color: #F4D03F;
+      background: #1a2745;
+    }
+    .tool-link h2 {
+      font-size: 14px;
+      color: #F4D03F;
+      margin-bottom: 4px;
+    }
+    .tool-link p {
+      font-size: 12px;
+      color: #888;
+      line-height: 1.4;
+    }
+    .tool-link.wide {
+      grid-column: span 2;
+    }
+    @media (max-width: 600px) {
+      .tools { grid-template-columns: 1fr; }
+      .tool-link.wide { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="launcher">
+    <a href="/" class="back-link">&#8592; Prototypes</a>
+    <h1>DESIGN TOOLS</h1>
+    <p class="subtitle">Data explorers for game design — types, spells, effects, schools, and more</p>
+
+    <div class="section-label">Type System</div>
+    <div class="tools">
+      <a href="combinations.html" class="tool-link">
+        <h2>Type Combinations</h2>
+        <p>Matrix of all type-pair spell, storm, and super power ideas</p>
+      </a>
+      <a href="counters.html" class="tool-link">
+        <h2>Counter Matrix</h2>
+        <p>Type matchups and counter relationships ranked by physics grounding</p>
+      </a>
+    </div>
+
+    <div class="section-label">Effects</div>
+    <div class="tools">
+      <a href="effects.html" class="tool-link">
+        <h2>Effect Space</h2>
+        <p>Taxonomy of all effects organized by archetype and category</p>
+      </a>
+      <a href="effect-matrix.html" class="tool-link">
+        <h2>Effect Matrix</h2>
+        <p>Which types use which effect archetypes (primary, secondary, situational)</p>
+      </a>
+      <a href="effect-combos.html" class="tool-link">
+        <h2>Combo Effects</h2>
+        <p>Track which spell combinations have assigned effects</p>
+      </a>
+    </div>
+
+    <div class="section-label">World</div>
+    <div class="tools">
+      <a href="schools.html" class="tool-link">
+        <h2>Wizard Schools</h2>
+        <p>Scientists mapped as wizard school founders per type</p>
+      </a>
+      <a href="scientists.html" class="tool-link">
+        <h2>Scientists</h2>
+        <p>Canonical scientist pool with type affinities and school assignments</p>
+      </a>
+      <a href="equipment.html" class="tool-link">
+        <h2>Units &amp; Instruments</h2>
+        <p>Scientific units and instruments as magical equipment per type</p>
+      </a>
+    </div>
+
+    <div class="section-label">Progression</div>
+    <div class="tools">
+      <a href="progression.html" class="tool-link">
+        <h2>Progression Tree</h2>
+        <p>Engine-building progression system with tech tree nodes</p>
+      </a>
+      <a href="prototype.html" class="tool-link">
+        <h2>Game Prototype</h2>
+        <p>Phaser 3 interactive prototype with octagon type layout</p>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

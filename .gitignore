@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+frontend/public/sql-wasm.wasm
+frontend/public/wizard_game.db
+
+# Generated database (rebuild with: python database/build.py)
+database/wizard_game.db
+
+# Vendored docs (have their own .git repos)
+docs/boardgame-io/
+docs/konva/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local

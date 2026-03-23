@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wizard Game Sandbox</title>
+  <link rel="stylesheet" href="/src/shared/styles.css" />
+</head>
+<body>
+  <div id="loading">Sandbox loading...</div>
+
+  <div id="start-screen">
+    <div class="start-content">
+      <h1>Wizard Game Sandbox</h1>
+      <p>Prototype the multiplayer card/board game economy</p>
+      <div class="start-form">
+        <label for="player-count">Players:</label>
+        <select id="player-count">
+          <option value="2" selected>2 Players</option>
+          <option value="3">3 Players</option>
+          <option value="4">4 Players</option>
+        </select>
+        <button id="start-btn">Start Game</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toolbar">
+    <div id="player-tabs"></div>
+
+    <span class="toolbar-group">
+      <label>Era:</label>
+      <button data-era="1" class="era-btn active">1</button>
+      <button data-era="2" class="era-btn">2</button>
+      <button data-era="3" class="era-btn">3</button>
+    </span>
+
+    <span class="toolbar-group">
+      <label>Spawn:</label>
+      <select id="spawn-type">
+        <optgroup label="Cards">
+          <option value="spell">Spell</option>
+          <option value="instrument">Instrument</option>
+          <option value="wizard">Wizard</option>
+        </optgroup>
+        <optgroup label="Tokens">
+          <option value="token-fire">Token: Fire</option>
+          <option value="token-earth">Token: Earth</option>
+          <option value="token-water">Token: Water</option>
+          <option value="token-air">Token: Air</option>
+          <option value="token-light">Token: Light</option>
+        </optgroup>
+      </select>
+      <select id="spawn-zone">
+        <option value="market">Market</option>
+        <option value="hand">Hand</option>
+        <option value="lab">Lab</option>
+      </select>
+      <button id="spawn-btn">Spawn</button>
+    </span>
+
+    <span class="toolbar-group">
+      <label>Preset:</label>
+      <select id="preset-select">
+        <option value="sandbox">Sandbox</option>
+        <option value="splendor">Splendor</option>
+        <option value="seven-wonders">7 Wonders</option>
+        <option value="everdell">Everdell</option>
+      </select>
+      <button id="settings-btn" title="Game Parameters">Settings</button>
+    </span>
+
+    <span class="toolbar-group">
+      <button id="score-btn" title="Score Tracker">Scores</button>
+    </span>
+
+    <span class="toolbar-group">
+      <button id="export-btn" title="Export state (Ctrl+S)">Export</button>
+      <button id="import-btn" title="Import saved state">Import</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" />
+    </span>
+
+    <span class="toolbar-group">
+      <button id="undo-btn">Undo</button>
+      <button id="redo-btn">Redo</button>
+      <button id="reset-btn">Reset</button>
+    </span>
+
+    <span class="toolbar-group" style="margin-left:auto">
+      <button id="bg-toggle-btn" title="Toggle background effect">BG</button>
+    </span>
+  </div>
+
+  <!-- Settings Panel (collapsible sidebar) -->
+  <div id="settings-panel">
+    <div class="settings-header">
+      <h3>Game Parameters</h3>
+      <button id="settings-close">&times;</button>
+    </div>
+    <div class="settings-body">
+      <div class="setting-row">
+        <label for="cfg-tokensPerPrimary">Tokens per primary type</label>
+        <input type="number" id="cfg-tokensPerPrimary" min="1" max="20" value="7" />
+      </div>
+      <div class="setting-row">
+        <label for="cfg-lightTokens">Light tokens</label>
+        <input type="number" id="cfg-lightTokens" min="0" max="20" value="5" />
+      </div>
+      <div class="setting-row">
+        <label for="cfg-cardsPerDraftHand">Cards per draft hand</label>
+        <input type="number" id="cfg-cardsPerDraftHand" min="3" max="12" value="7" />
+      </div>
+      <div class="setting-row">
+        <label for="cfg-marketSize">Market size</label>
+        <input type="number" id="cfg-marketSize" min="1" max="12" value="5" />
+      </div>
+      <div class="setting-row">
+        <label for="cfg-labMaxSize">Lab max size (0 = unlimited)</label>
+        <input type="number" id="cfg-labMaxSize" min="0" max="30" value="0" />
+      </div>
+      <div class="setting-row">
+        <label for="cfg-tokenTakeLimit">Token take limit</label>
+        <input type="number" id="cfg-tokenTakeLimit" min="1" max="10" value="3" />
+      </div>
+      <div class="setting-row">
+        <label for="cfg-draftDirection">Draft direction</label>
+        <select id="cfg-draftDirection">
+          <option value="alternating">Alternating</option>
+          <option value="clockwise">Clockwise</option>
+          <option value="counterclockwise">Counter-clockwise</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <label for="cfg-discardReward">Discard reward (tokens)</label>
+        <input type="number" id="cfg-discardReward" min="0" max="5" value="2" />
+      </div>
+      <div class="settings-actions">
+        <button id="settings-apply">Apply &amp; Reset Game</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Score Tracker Panel -->
+  <div id="score-panel">
+    <div class="settings-header">
+      <h3>Score Tracker</h3>
+      <button id="score-close">&times;</button>
+    </div>
+    <div id="score-body" class="settings-body">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+
+  <div id="app"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sql.js@1/dist/sql-wasm.js"></script>
+  <script type="module" src="/src/sandbox/main.js"></script>
+</body>
+</html>

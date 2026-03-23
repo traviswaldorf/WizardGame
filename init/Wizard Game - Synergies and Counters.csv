@@ -1,0 +1,14 @@
+SYNERGY,,,THIS,COUNTERS
+Magnetic,Metal,,Water,Fire
+Electric,Crystal,,,
+Heat,Plant,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+EQUATION,,,,
+Fire,+,Poison,=,Radioactive
+Water,+,Radioactive,=,Poison

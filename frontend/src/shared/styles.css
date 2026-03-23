@@ -1,0 +1,372 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #16213e;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #e0e0e0;
+}
+
+/* ─── Loading ─── */
+
+#loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 1.5rem;
+  color: #8899aa;
+}
+
+/* ─── Start Screen ─── */
+
+#start-screen {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.start-content {
+  text-align: center;
+}
+
+.start-content h1 {
+  font-size: 2.5rem;
+  color: #F4D03F;
+  margin-bottom: 8px;
+}
+
+.start-content p {
+  font-size: 1rem;
+  color: #8899aa;
+  margin-bottom: 32px;
+}
+
+.start-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.start-form label {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.start-form select, .start-form button {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  border: 1px solid #3a3a5a;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.start-form button {
+  background: #F4D03F;
+  color: #0f0f1a;
+  border-color: #F4D03F;
+  font-weight: bold;
+  padding: 8px 28px;
+}
+
+.start-form button:hover {
+  background: #f7dc6f;
+}
+
+/* ─── Toolbar ─── */
+
+#toolbar {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: #0f0f1a;
+  border-bottom: 1px solid #2a2a4a;
+  padding: 0 16px;
+  align-items: center;
+  gap: 16px;
+  z-index: 100;
+}
+
+#player-tabs {
+  display: flex;
+  gap: 4px;
+  margin-right: 12px;
+}
+
+.player-tab {
+  background: #1a1a2e;
+  color: #8899aa;
+  border: 1px solid #3a3a5a;
+  border-bottom: 3px solid transparent;
+  border-radius: 4px 4px 0 0;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.player-tab.active {
+  color: #fff;
+  background: #2a2a4e;
+  border-bottom-color: currentColor;
+}
+
+.player-tab:hover {
+  color: #ccc;
+  background: #2a2a4e;
+}
+
+.toolbar-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-group label {
+  font-size: 12px;
+  color: #8899aa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#toolbar button, #toolbar select {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+#toolbar button:hover {
+  background: #2a2a4e;
+  border-color: #5a5a8a;
+}
+
+#toolbar select {
+  padding: 4px 6px;
+}
+
+.era-btn.active {
+  background: #F4D03F;
+  color: #0f0f1a;
+  border-color: #F4D03F;
+  font-weight: bold;
+}
+
+/* ─── Settings Panel ─── */
+
+#settings-panel {
+  display: none;
+  position: fixed;
+  top: 48px;
+  right: 0;
+  width: 300px;
+  height: calc(100% - 48px);
+  background: #0f0f1a;
+  border-left: 1px solid #2a2a4a;
+  z-index: 99;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#settings-panel.open {
+  display: flex;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #2a2a4a;
+}
+
+.settings-header h3 {
+  font-size: 14px;
+  color: #F4D03F;
+  font-weight: 600;
+}
+
+.settings-header button {
+  background: none;
+  border: none;
+  color: #8899aa;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.settings-header button:hover {
+  color: #fff;
+}
+
+.settings-body {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setting-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setting-row label {
+  font-size: 12px;
+  color: #8899aa;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.setting-row input,
+.setting-row select {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  width: 100%;
+}
+
+.setting-row input:focus,
+.setting-row select:focus {
+  outline: none;
+  border-color: #F4D03F;
+}
+
+.settings-actions {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #2a2a4a;
+}
+
+.settings-actions button {
+  width: 100%;
+  background: #F4D03F;
+  color: #0f0f1a;
+  border: 1px solid #F4D03F;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.settings-actions button:hover {
+  background: #f7dc6f;
+}
+
+/* ─── Score Panel ─── */
+
+#score-panel {
+  display: none;
+  position: fixed;
+  top: 48px;
+  left: 0;
+  width: 280px;
+  height: calc(100% - 48px);
+  background: #0f0f1a;
+  border-right: 1px solid #2a2a4a;
+  z-index: 99;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#score-panel.open {
+  display: flex;
+}
+
+.score-player {
+  margin-bottom: 16px;
+}
+
+.score-player-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #2a2a4a;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.score-bar-label {
+  font-size: 11px;
+  color: #8899aa;
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.score-bar-track {
+  flex: 1;
+  height: 12px;
+  background: #1a1a2e;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  min-width: 2px;
+}
+
+.score-bar-value {
+  font-size: 12px;
+  color: #e0e0e0;
+  width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #3a3a5a;
+  font-size: 14px;
+  font-weight: bold;
+  color: #F4D03F;
+}
+
+/* ─── Canvas ─── */
+
+#app {
+  width: 100%;
+  height: calc(100% - 48px);
+  margin-top: 48px;
+  display: none;
+}
