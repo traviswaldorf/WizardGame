@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wizard Game Prototypes</title>
+  <title>Theory of Everything</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -36,11 +39,50 @@
       text-align: center;
       max-width: 600px;
       padding: 2rem;
+      cursor: pointer;
+      transition: transform 3s cubic-bezier(0.2, 0, 0.2, 1);
     }
+    .launcher.warping {
+      transform: scale(1.6);
+    }
+    .launcher.revealed { cursor: default; }
+    .launcher .prototypes {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+      pointer-events: none;
+    }
+    .launcher.revealed .prototypes {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .launcher .subtitle {
+      transition: opacity 0.3s ease;
+    }
+    .launcher.revealed .subtitle { opacity: 1; }
     h1 {
-      font-size: 2rem;
+      font-size: 3.5rem;
       margin-bottom: 0.5rem;
       color: #F4D03F;
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+    }
+    .cycling-word {
+      display: block;
+      height: 1.3em;
+      overflow: hidden;
+    }
+    .cycling-word .char {
+      display: inline-block;
+      width: 0.62em;
+      text-align: center;
+      transition: opacity 0.1s;
+    }
+    .cycling-word .char.scrambling {
+      opacity: 0.5;
+    }
+    .cycling-word .char.settled {
+      opacity: 1;
     }
     .subtitle {
       color: #888;
@@ -79,8 +121,7 @@
 <body>
   <button class="bg-toggle" id="bg-toggle">BG Effect</button>
   <div class="launcher">
-    <h1>Wizard Game</h1>
-    <p class="subtitle">Select a prototype to launch</p>
+    <h1>Theory of<br><span class="cycling-word" id="cycling-word"></span></h1>
     <div class="prototypes">
       <a href="/src/sandbox/" class="prototype-link">
         <h2>Multiplayer Sandbox</h2>
@@ -97,7 +138,10 @@
     </div>
   </div>
   <script type="module">
-    import { initBackground, cycleBackground, getBackgroundMode } from '/src/shared/background.js';
+    import {
+      initBackground, cycleBackground, getBackgroundMode,
+      setBackground, setWarp,
+    } from '/src/shared/background.js';
     initBackground();
     const btn = document.getElementById('bg-toggle');
     const labels = { off: 'BG: Off', swirl: 'BG: Swirl', forge: 'BG: Forge' };
@@ -108,6 +152,191 @@
     }
     sync();
     btn.addEventListener('click', () => { cycleBackground(); sync(); });
+
+    // ─── Word list ───
+    const WORDS = [
+      // Scientific
+      'Everything',   'Relativity',   'Evolution',    'Gravity',
+      'Chaos',        'Entropy',      'Light',        'Color',
+      'Games',        'Strings',      'Information',  'Motion',
+      'Numbers',      'Fields',       'Waves',        'Matter',
+      'Energy',       'Atoms',        'Probability',  'Symmetry',
+      // Schools & scientific disciplines
+      'Combustion',   'Mass',         'Fluids',       'Pressure',
+      'Hardness',     'Growth',       'Cold',         'Current',
+      'Toxicology',   'Acoustics',    'Frequency',    'Thermodynamics',
+      'Electromagnetism',             'Optics',       'Mechanics',
+      'Crystallography',              'Genetics',     'Ecology',
+      'Cosmology',    'Calculus',     'Geometry',     'Quantum',
+      // Personal
+      'You',          'Me',           'Us',           'Life',
+      'Magic',        'Nothing',      'Mind',         'Change',
+      'Time',         'Space',        'Discovery',    'Wonder',
+      'Fire',         'Earth',        'Water',        'Air',
+      'Stars',        'Sound',        'Memory',       'Desire',
+      'Power',        'Truth',        'Dreams',       'Ruin',
+    ];
+
+    // ─── Scramble engine ───
+    const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*!?+=~<>';
+    const TICK_MS = 35;
+    const SCRAMBLE_ROUNDS = 8;
+    const STAGGER = 2;
+    const HOLD_MS = 3000;
+
+    const el = document.getElementById('cycling-word');
+    let wordIndex = 0;
+    let cycleAbort = null;
+
+    function randomGlyph() {
+      return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+    }
+
+    function setChars(text, states) {
+      el.innerHTML = '';
+      for (let i = 0; i < text.length; i++) {
+        const span = document.createElement('span');
+        span.className = 'char ' + (states?.[i] || '');
+        span.textContent = text[i];
+        el.appendChild(span);
+      }
+    }
+
+    function scrambleTo(target, tickMs = TICK_MS, rounds = SCRAMBLE_ROUNDS, stagger = STAGGER) {
+      return new Promise((resolve) => {
+        const len = target.length;
+        const counts = new Array(len).fill(0);
+        const display = new Array(len).fill('');
+        const states = new Array(len).fill('scrambling');
+
+        const interval = setInterval(() => {
+          let allDone = true;
+          for (let i = 0; i < len; i++) {
+            const threshold = rounds + i * stagger;
+            if (counts[i] >= threshold) {
+              display[i] = target[i];
+              states[i] = 'settled';
+            } else {
+              display[i] = randomGlyph();
+              states[i] = 'scrambling';
+              allDone = false;
+            }
+            counts[i]++;
+          }
+          setChars(display, states);
+          if (allDone) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, tickMs);
+      });
+    }
+
+    function pickNext() {
+      let next;
+      do {
+        next = Math.floor(Math.random() * WORDS.length);
+      } while (next === wordIndex && WORDS.length > 1);
+      wordIndex = next;
+      return WORDS[wordIndex];
+    }
+
+    function sleep(ms, signal) {
+      return new Promise((resolve, reject) => {
+        const id = setTimeout(resolve, ms);
+        if (signal) signal.addEventListener('abort', () => { clearTimeout(id); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
+      });
+    }
+
+    async function idleCycle() {
+      const ac = new AbortController();
+      cycleAbort = ac;
+      try {
+        const first = WORDS[0];
+        setChars(first.split(''), first.split('').map(() => 'settled'));
+        await sleep(HOLD_MS, ac.signal);
+        while (true) {
+          await scrambleTo(pickNext());
+          await sleep(HOLD_MS, ac.signal);
+        }
+      } catch (e) {
+        if (e.name !== 'AbortError') throw e;
+      }
+    }
+
+    // ─── Warp animation (drives shader u_warp) ───
+    const WARP_DURATION = 4000;
+
+    function animateWarp() {
+      return new Promise((resolve) => {
+        const start = performance.now();
+        function tick(now) {
+          const progress = Math.min((now - start) / WARP_DURATION, 1);
+          // Quadratic ramp: slow start, accelerating
+          setWarp(progress * progress);
+          if (progress < 1) {
+            requestAnimationFrame(tick);
+          } else {
+            resolve();
+          }
+        }
+        requestAnimationFrame(tick);
+      });
+    }
+
+    // ─── Click → warp sequence ───
+    const launcher = document.querySelector('.launcher');
+    let warping = false;
+
+    launcher.addEventListener('click', async (e) => {
+      if (launcher.classList.contains('revealed') || warping) return;
+      e.preventDefault();
+      warping = true;
+
+      // 1. Stop idle cycling
+      if (cycleAbort) cycleAbort.abort();
+
+      // 2. Scramble back to "Everything"
+      wordIndex = 0;
+      await scrambleTo('Everything');
+
+      // 3. Sit for a beat
+      await sleep(1000);
+
+      // 4. Remember current BG mode, start warp + zoom
+      const prevMode = getBackgroundMode();
+      setWarp(0.01); // forces forge on if needed
+      launcher.classList.add('warping');
+
+      // 5. Run shader warp + fast word cycling in parallel
+      const warpPromise = animateWarp();
+      const warpCycleEnd = performance.now() + WARP_DURATION - 600;
+      while (performance.now() < warpCycleEnd) {
+        await scrambleTo(pickNext(), 25, 5, 1);
+        await sleep(400);
+      }
+      await warpPromise;
+
+      // 6. Final word: land on "Everything"
+      wordIndex = 0;
+      await scrambleTo('Everything', 30, 6, 2);
+
+      // 7. Wind down warp, restore BG, reveal
+      setWarp(0);
+      if (prevMode !== 'forge') {
+        setBackground(prevMode);
+        sync();
+      }
+      launcher.classList.remove('warping');
+      launcher.style.transition = 'transform 0.6s ease-out';
+      await sleep(700);
+      launcher.style.transition = '';
+      launcher.classList.add('revealed');
+      warping = false;
+    });
+
+    // Start idle cycle
+    idleCycle();
   </script>
 </body>
 </html>

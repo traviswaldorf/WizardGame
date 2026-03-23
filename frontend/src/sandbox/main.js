@@ -5,6 +5,7 @@ import { loadGameData } from '../shared/data.js';
 import { TableRenderer } from './renderer.js';
 import { calcAllScores, SCORE_PATHS } from './scoring.js';
 import { initBackground, cycleBackground, getBackgroundMode } from '../shared/background.js';
+import { initCardStyle, cycleCardStyle, getCardStyle } from '../shared/card-style.js';
 import '../shared/styles.css';
 
 // ─── Scenario Presets ───
@@ -93,8 +94,9 @@ async function init() {
     // 2. Load saved config from localStorage
     loadSavedConfig();
 
-    // 3. Init background effect (restores saved pref)
+    // 3. Init visual preferences (restores saved prefs)
     initBackground();
+    initCardStyle();
 
     // 4. Hide loading, show start screen
     document.getElementById('loading').style.display = 'none';
@@ -488,6 +490,24 @@ function setupToolbar() {
   document.getElementById('redo-btn').addEventListener('click', () => getActiveClient().redo());
   document.getElementById('reset-btn').addEventListener('click', () => {
     restartGame(currentConfig);
+  });
+
+  // Card style toggle (default ↔ pixel)
+  const styleBtn = document.getElementById('style-toggle-btn');
+  const styleLabels = { default: 'Style', pixel: 'Style: Pixel' };
+  function syncStyle() {
+    const mode = getCardStyle();
+    styleBtn.textContent = styleLabels[mode];
+    styleBtn.style.borderColor = mode !== 'default' ? '#F4D03F' : '';
+    styleBtn.style.color = mode !== 'default' ? '#F4D03F' : '';
+  }
+  syncStyle();
+  styleBtn.addEventListener('click', () => {
+    cycleCardStyle();
+    syncStyle();
+    // Re-render to apply new style
+    const state = getActiveClient().getState();
+    if (state) onStateChange(state);
   });
 
   // Background effect toggle (cycles: off → swirl → forge → off)

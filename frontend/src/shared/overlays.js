@@ -318,7 +318,7 @@ function addText(parent, x, y, width, text, fontSize, fill, fontStyle, align) {
 
 function createArrow(x, y, text, onClick) {
   const group = new Konva.Group({ x, y: y - 20 });
-  group.add(new Konva.Rect({ width: 40, height: 40, fill: '#2a2a4e', stroke: '#5a5a8a', strokeWidth: 1, cornerRadius: 20 }));
+  group.add(new Konva.Rect({ width: 40, height: 40, fill: '#2a2a4e', stroke: '#5a5a8a', strokeWidth: 1, cornerRadius: isPixel() ? 0 : 20 }));
   group.add(new Konva.Text({ width: 40, height: 40, text, fontSize: 18, fontFamily: getFont(), fill: '#e0e0e0', align: 'center', verticalAlign: 'middle' }));
   group.on('mouseenter', () => { group.findOne('Rect').fill('#3a3a6e'); document.body.style.cursor = 'pointer'; group.getLayer()?.batchDraw(); });
   group.on('mouseleave', () => { group.findOne('Rect').fill('#2a2a4e'); document.body.style.cursor = 'default'; group.getLayer()?.batchDraw(); });
@@ -328,7 +328,7 @@ function createArrow(x, y, text, onClick) {
 
 function createButton(x, y, w, h, text, color) {
   const group = new Konva.Group({ x, y });
-  group.add(new Konva.Rect({ width: w, height: h, fill: color, cornerRadius: 4, opacity: 0.9 }));
+  group.add(new Konva.Rect({ width: w, height: h, fill: color, cornerRadius: isPixel() ? 0 : 4, opacity: 0.9 }));
   group.add(new Konva.Text({ width: w, height: h, text, fontSize: 12, fontStyle: 'bold', fontFamily: getFont(), fill: '#fff', align: 'center', verticalAlign: 'middle' }));
   group.on('mouseenter', () => { group.findOne('Rect').opacity(1); document.body.style.cursor = 'pointer'; group.getLayer()?.batchDraw(); });
   group.on('mouseleave', () => { group.findOne('Rect').opacity(0.9); document.body.style.cursor = 'default'; group.getLayer()?.batchDraw(); });

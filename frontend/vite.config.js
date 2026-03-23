@@ -22,6 +22,7 @@ export default defineConfig({
         'design-scientists': 'src/design/scientists.html',
         'design-equipment': 'src/design/equipment.html',
         'design-progression': 'src/design/progression.html',
+        'design-roguelike-progression': 'src/design/roguelike-progression.html',
         'design-prototype': 'src/design/prototype.html',
       },
     },

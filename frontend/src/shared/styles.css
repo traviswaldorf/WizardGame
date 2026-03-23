@@ -362,6 +362,70 @@ html, body {
   color: #F4D03F;
 }
 
+/* ─── Pixel Art Mode ─── */
+
+.pixel-mode {
+  font-family: 'Press Start 2P', cursive !important;
+}
+
+.pixel-mode #toolbar button,
+.pixel-mode #toolbar select,
+.pixel-mode .player-tab,
+.pixel-mode .toolbar-group label,
+.pixel-mode .setting-row label,
+.pixel-mode .setting-row input,
+.pixel-mode .setting-row select,
+.pixel-mode .settings-header h3,
+.pixel-mode .settings-actions button,
+.pixel-mode .start-form select,
+.pixel-mode .start-form button,
+.pixel-mode .start-content h1,
+.pixel-mode .start-content p,
+.pixel-mode .score-bar-label,
+.pixel-mode .score-bar-value,
+.pixel-mode .score-player-name,
+.pixel-mode .score-total {
+  font-family: 'Press Start 2P', cursive !important;
+}
+
+.pixel-mode #toolbar button,
+.pixel-mode #toolbar select,
+.pixel-mode .player-tab,
+.pixel-mode .toolbar-group label {
+  font-size: 9px;
+}
+
+.pixel-mode .setting-row label {
+  font-size: 9px;
+}
+
+.pixel-mode .setting-row input,
+.pixel-mode .setting-row select {
+  font-size: 10px;
+}
+
+.pixel-mode .start-content h1 {
+  font-size: 1.6rem;
+}
+
+.pixel-mode .start-content p {
+  font-size: 0.7rem;
+}
+
+.pixel-mode #toolbar button,
+.pixel-mode #toolbar select,
+.pixel-mode .player-tab,
+.pixel-mode .settings-actions button,
+.pixel-mode .start-form select,
+.pixel-mode .start-form button {
+  border-radius: 0;
+}
+
+.pixel-mode .konvajs-content canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 /* ─── Canvas ─── */
 
 #app {

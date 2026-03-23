@@ -4,10 +4,12 @@ Run: python database/build.py
 """
 import sqlite3
 import os
+import shutil
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(SCRIPT_DIR, 'wizard_game.db')
 SCHEMA_PATH = os.path.join(SCRIPT_DIR, 'schema.sql')
+PUBLIC_DB_PATH = os.path.join(SCRIPT_DIR, '..', 'frontend', 'public', 'wizard_game.db')
 
 
 # =============================================
@@ -58,6 +60,27 @@ DARK_PAIR_PARENT = [
     ('Heat',        None, 'Ice'),
     ('Magnetic',    None, 'Electric'),
 ]
+
+# Visual design attributes per type
+# (secondary_color, accent_color, visual_motifs, card_border, icon_symbol)
+TYPE_VISUALS = {
+    'Fire':        ('#C0392B', '#F39C12', 'Flames, embers, solar flares, sparks',              'warm-glow',    '☀'),
+    'Earth':       ('#7D3C14', '#D4A76A', 'Rocks, tectonic plates, fossils, mountains',        'solid-thick',  '⬢'),
+    'Water':       ('#1B4F72', '#5DADE2', 'Waves, currents, rain, tides, bubbles',             'flowing',      '≋'),
+    'Air':         ('#7FB3D8', '#D4E6F1', 'Clouds, wind streaks, feathers, tornadoes',         'thin-ethereal','≈'),
+    'Metal':       ('#5D6C7B', '#BDC3C7', 'Gears, chains, anvils, ingots, rivets',            'riveted',      '⚙'),
+    'Plant':       ('#1E8449', '#58D68D', 'Vines, leaves, roots, flowers, bark',               'organic',      '❦'),
+    'Ice':         ('#5DADE2', '#D6EAF8', 'Snowflakes, frost, icicles, glaciers',              'frosted',      '✻'),
+    'Electric':    ('#D4AC0D', '#FEF9E7', 'Lightning bolts, circuits, sparks, arcs',           'spark',        '↯'),
+    'Radioactive': ('#8CC800', '#DFFF4F', 'Hazard symbols, glowing rods, particle trails',     'pulse-glow',   '☢'),
+    'Cosmic':      ('#5B2C6F', '#A569BD', 'Stars, galaxies, black holes, nebulae',             'nebula',       '✦'),
+    'Poison':      ('#6C3483', '#C39BD3', 'Bubbling liquid, toxin drops, corroding surfaces',  'drip',         '☠'),
+    'Sound':       ('#C2185B', '#FF6B9D', 'Sound waves, vibration lines, echo rings',         'wave',         '♫'),
+    'Crystal':     ('#148F77', '#48C9B0', 'Geometric lattices, prisms, facets, refractions',   'faceted',      '◇'),
+    'Ghost':       ('#34495E', '#85929E', 'Wisps, fading forms, entropy spirals, hollow shells','fade',        '☽'),
+    'Heat':        ('#CA6F1E', '#F0B27A', 'Heat waves, convection currents, lava, embers',     'ember',        '∿'),
+    'Magnetic':    ('#1B2631', '#5D6D7E', 'Field lines, poles, compass needles, ferrofluid',   'field-lines',  '⊕'),
+}
 
 
 # =============================================
@@ -3419,6 +3442,15 @@ def build():
     c.execute('SELECT id, name FROM types')
     T = {name: tid for tid, name in c.fetchall()}
 
+    # --- 1b. Update visual design attributes ---
+    for type_name, (sec, acc, motifs, border, icon) in TYPE_VISUALS.items():
+        c.execute(
+            '''UPDATE types SET secondary_color = ?, accent_color = ?,
+               visual_motifs = ?, card_border = ?, icon_symbol = ?
+               WHERE id = ?''',
+            (sec, acc, motifs, border, icon, T[type_name])
+        )
+
     # --- 2. Insert old name candidates ---
     for type_name, name, etymology, is_selected in OLD_NAMES:
         c.execute(
@@ -3790,6 +3822,11 @@ def build():
 
     conn.close()
     print(f'\nDatabase written to {DB_PATH}')
+
+    # Copy to frontend/public so Vite dev server serves the latest build
+    if os.path.isdir(os.path.dirname(PUBLIC_DB_PATH)):
+        shutil.copy2(DB_PATH, PUBLIC_DB_PATH)
+        print(f'Copied to {PUBLIC_DB_PATH}')
 
 
 if __name__ == '__main__':

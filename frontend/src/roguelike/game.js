@@ -184,9 +184,88 @@ function generateRewardCards(G, catalogSpells, catalogInstruments, catalogTypes)
 }
 
 /**
+ * Check if any nodes are reachable from the current position.
+ * If not, the run is over (victory).
+ */
+function hasReachableNodes(map, currentPosition) {
+  if (currentPosition === null) return true;
+  return map.edges.some(e => e.from === currentPosition);
+}
+
+/**
+ * Calculate Insight earned from a completed run.
+ */
+function calculateInsight(G) {
+  let insight = 0;
+  const isVictory = G.run.result === 'victory';
+  // Base
+  insight += isVictory ? 25 : 10;
+  // Floor progress: 2 per floor reached
+  const currentNode = G.run.map.nodes.find(n => n.id === G.run.position);
+  const floorsReached = currentNode ? currentNode.floor + 1 : 0;
+  insight += floorsReached * 2;
+  // Gold bonus: 1 per 25 gold
+  insight += Math.floor(G.run.gold / 25);
+  // Deck size bonus: 1 per card beyond 10
+  const totalCards = G.player.deck.length + G.player.hand.length + G.player.discard.length;
+  insight += Math.max(0, totalCards - 10);
+  // Equipment bonus: 3 per instrument
+  insight += (G.player.equipment?.length || 0) * 3;
+  return insight;
+}
+
+/**
+ * Calculate Materials earned from a completed run.
+ */
+function calculateMaterials(G) {
+  let materials = 0;
+  if (G.run.result === 'victory') materials += 5;
+  materials += Math.floor(G.run.gold / 50);
+  return materials;
+}
+
+/**
+ * Reset the run-scoped state in G for a new run, preserving G.meta.
+ */
+function resetRunState(G, catalog, floorCount) {
+  G.run.map = generateMap(null, 1, floorCount);
+  G.run.position = null;
+  G.run.gold = 0;
+  G.run.score = 0;
+  G.run.act = 1;
+  G.run.result = null;
+  G.run.insightEarned = 0;
+  G.run.materialsEarned = 0;
+
+  const starterDeck = buildStarterDeck(catalog);
+  const shuffled = starterDeck.sort(() => Math.random() - 0.5);
+  const hand = shuffled.splice(0, 5);
+  const typeEnergy = {};
+  for (const t of catalog.types) {
+    typeEnergy[t.name.toLowerCase()] = t.tier === 'primary' ? 2 : 0;
+  }
+  G.player = {
+    hp: 50, maxHp: 50,
+    typeEnergy: { ...typeEnergy },
+    maxTypeEnergy: { ...typeEnergy },
+    attunements: {},
+    deck: shuffled, hand, discard: [],
+    equipment: [], wizard: null, school: null,
+  };
+
+  G.combat = {
+    enemy: null, enemyHp: 0, enemyMaxHp: 0, enemyBlock: 0,
+    playerBlock: 0, turnNumber: 0,
+    statusEffects: { player: [], enemy: [] },
+  };
+  G.reward = { cards: [], instrument: null, gold: 0 };
+  G.shop = { cards: [], removeCardPrice: 50 };
+}
+
+/**
  * Create the roguelike game definition.
  * @param {object} catalog — { types, spells, instruments, wizards } from DB
- * @param {object} config — { floorCount } run configuration
+ * @param {object} config — { floorCount, metaState, roguelikeData } run configuration
  */
 export function createRoguelikeGame(catalog, config = {}) {
   const floorCount = config.floorCount || 15;
@@ -223,6 +302,9 @@ export function createRoguelikeGame(catalog, config = {}) {
           position: null,         // current node id (null = not started)
           gold: 0,
           score: 0,
+          result: null,           // 'victory' | 'defeat' (set on run end)
+          insightEarned: 0,
+          materialsEarned: 0,
         },
 
         // Player state
@@ -262,6 +344,17 @@ export function createRoguelikeGame(catalog, config = {}) {
         shop: {
           cards: [],
           removeCardPrice: 50,
+        },
+
+        // Meta-progression state (persisted via localStorage)
+        meta: config.metaState || {
+          insight: 0,
+          materials: 0,
+          unlockedResearch: [],
+          unlockedMeta: [],
+          schoolMastery: {},
+          totalRuns: 0,
+          totalVictories: 0,
         },
 
         // Catalog reference
@@ -461,6 +554,7 @@ export function createRoguelikeGame(catalog, config = {}) {
 
             // Check if player died
             if (G.player.hp <= 0) {
+              G.run.result = 'defeat';
               events.setPhase('runEnd');
               return;
             }
@@ -497,7 +591,12 @@ export function createRoguelikeGame(catalog, config = {}) {
             }
             G.reward.cards = [];
             G.reward.instrument = null;
-            events.setPhase('mapNavigation');
+            if (hasReachableNodes(G.run.map, G.run.position)) {
+              events.setPhase('mapNavigation');
+            } else {
+              G.run.result = 'victory';
+              events.setPhase('runEnd');
+            }
           },
           selectInstrument: ({ G, events }) => {
             const inst = G.reward.instrument;
@@ -513,12 +612,22 @@ export function createRoguelikeGame(catalog, config = {}) {
 
             G.reward.cards = [];
             G.reward.instrument = null;
-            events.setPhase('mapNavigation');
+            if (hasReachableNodes(G.run.map, G.run.position)) {
+              events.setPhase('mapNavigation');
+            } else {
+              G.run.result = 'victory';
+              events.setPhase('runEnd');
+            }
           },
           skipReward: ({ G, events }) => {
             G.reward.cards = [];
             G.reward.instrument = null;
-            events.setPhase('mapNavigation');
+            if (hasReachableNodes(G.run.map, G.run.position)) {
+              events.setPhase('mapNavigation');
+            } else {
+              G.run.result = 'victory';
+              events.setPhase('runEnd');
+            }
           },
         },
       },
@@ -614,10 +723,68 @@ export function createRoguelikeGame(catalog, config = {}) {
       },
 
       /**
-       * RUN END — Game over (win or lose).
+       * RUN END — Show results, then continue to laboratory.
        */
       runEnd: {
-        moves: {},
+        onBegin: ({ G }) => {
+          // Tally meta stats
+          G.meta.totalRuns++;
+          if (G.run.result === 'victory') {
+            G.meta.totalVictories++;
+          }
+          // Track school mastery
+          if (G.player.school) {
+            const typeId = G.player.school.typeId;
+            G.meta.schoolMastery[typeId] ??= { level: 1, runs: 0, victories: 0 };
+            G.meta.schoolMastery[typeId].runs++;
+            if (G.run.result === 'victory') {
+              G.meta.schoolMastery[typeId].victories++;
+            }
+          }
+          // Calculate rewards
+          G.run.insightEarned = calculateInsight(G);
+          G.meta.insight += G.run.insightEarned;
+          G.run.materialsEarned = calculateMaterials(G);
+          G.meta.materials += G.run.materialsEarned;
+        },
+        moves: {
+          ...DEBUG_MOVES,
+          continueToLab: ({ events }) => {
+            events.setPhase('laboratory');
+          },
+        },
+      },
+
+      /**
+       * LABORATORY — Between-run hub for meta-progression.
+       */
+      laboratory: {
+        moves: {
+          ...DEBUG_MOVES,
+          purchaseResearch: ({ G }, researchId) => {
+            const item = (config.roguelikeData?.research || []).find(r => r.id === researchId);
+            if (!item) return;
+            // Check max purchases
+            const purchaseCount = G.meta.unlockedResearch.filter(id => id === researchId).length;
+            if (purchaseCount >= item.max_purchases) return;
+            // Check affordability
+            if (G.meta.insight < item.insight_cost) return;
+            if (G.meta.materials < (item.material_cost || 0)) return;
+            // Spend currencies
+            G.meta.insight -= item.insight_cost;
+            G.meta.materials -= (item.material_cost || 0);
+            // Record purchase
+            G.meta.unlockedResearch.push(researchId);
+            // Grant meta-unlock if applicable
+            if (item.meta_unlock_id && !G.meta.unlockedMeta.includes(item.meta_unlock_id)) {
+              G.meta.unlockedMeta.push(item.meta_unlock_id);
+            }
+          },
+          startNextRun: ({ G, events }) => {
+            resetRunState(G, catalog, floorCount);
+            events.setPhase('schoolSelection');
+          },
+        },
       },
     },
   };

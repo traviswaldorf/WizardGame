@@ -1,4 +1,5 @@
 import Konva from 'konva';
+import { getFont } from './card-style.js';
 
 /**
  * Zone definitions and layout calculations.
@@ -114,7 +115,7 @@ export function drawZones(layer, bounds) {
       y: zone.y + 4,
       text: zone.label,
       fontSize: 11,
-      fontFamily: 'Segoe UI, system-ui, sans-serif',
+      fontFamily: getFont(),
       fill: zone.color,
       opacity: 0.7,
     }));

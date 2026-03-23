@@ -89,6 +89,13 @@ export class RoguelikeRenderer {
   }
 
   /**
+   * Store roguelike progression data for rendering Laboratory.
+   */
+  setRoguelikeData(data) {
+    this._roguelikeData = data;
+  }
+
+  /**
    * Check if the player can afford a card's type cost.
    */
   canAffordCard(typeEnergy, card) {
@@ -149,6 +156,10 @@ export class RoguelikeRenderer {
       this.mapLayer.hide();
       this.combatLayer.show();
       this.renderRunEnd(G);
+    } else if (phase === 'laboratory') {
+      this.mapLayer.hide();
+      this.combatLayer.show();
+      this.renderLaboratory(G);
     }
 
     this._currentPhase = phase;
@@ -177,6 +188,16 @@ export class RoguelikeRenderer {
     if (goldEl) goldEl.textContent = G.run.gold;
     if (actEl) actEl.textContent = G.run.act;
     if (phaseEl) phaseEl.textContent = ctx.phase || 'map';
+
+    // Meta stats (Insight / Materials)
+    const metaGroup = document.getElementById('meta-stats-group');
+    if (metaGroup && G.meta) {
+      metaGroup.style.display = '';
+      const insightEl = document.getElementById('stat-insight');
+      const materialsEl = document.getElementById('stat-materials');
+      if (insightEl) insightEl.textContent = G.meta.insight;
+      if (materialsEl) materialsEl.textContent = G.meta.materials;
+    }
   }
 
   /**
@@ -1260,38 +1281,271 @@ export class RoguelikeRenderer {
     const w = this.stage.width();
     const h = this.stage.height();
 
-    const isVictory = G.player.hp > 0;
+    const isVictory = G.run.result === 'victory';
 
     this.combatLayer.add(new Konva.Text({
       text: isVictory ? 'Run Complete!' : 'Defeated',
       fontSize: 28, fill: isVictory ? '#F4D03F' : '#E74C3C',
-      x: 0, y: h * 0.3,
+      x: 0, y: h * 0.2,
       width: w, align: 'center',
     }));
 
     this.combatLayer.add(new Konva.Text({
       text: `Gold: ${G.run.gold}  |  Act: ${G.run.act}`,
       fontSize: 16, fill: '#888',
-      x: 0, y: h * 0.4,
+      x: 0, y: h * 0.28,
       width: w, align: 'center',
     }));
 
-    // Restart button
-    const restartBtn = new Konva.Group({ x: w / 2 - 70, y: h * 0.5 });
+    // Insight / Materials earned
+    this.combatLayer.add(new Konva.Text({
+      text: `+${G.run.insightEarned} Insight    +${G.run.materialsEarned} Materials`,
+      fontSize: 18, fill: '#F4D03F',
+      x: 0, y: h * 0.36,
+      width: w, align: 'center',
+    }));
+
+    this.combatLayer.add(new Konva.Text({
+      text: `Total: ${G.meta.insight} Insight  |  ${G.meta.materials} Materials  |  Runs: ${G.meta.totalRuns}`,
+      fontSize: 13, fill: '#666',
+      x: 0, y: h * 0.42,
+      width: w, align: 'center',
+    }));
+
+    // Continue to Laboratory button
+    const labBtn = new Konva.Group({ x: w / 2 - 110, y: h * 0.52 });
+    labBtn.add(new Konva.Rect({
+      width: 220, height: 44,
+      fill: '#27AE60', cornerRadius: 6,
+    }));
+    labBtn.add(new Konva.Text({
+      text: 'Continue to Laboratory',
+      fontSize: 15, fill: '#fff',
+      width: 220, height: 44,
+      align: 'center', verticalAlign: 'middle',
+    }));
+    labBtn.on('click tap', () => { this.emit('continueToLab'); });
+    labBtn.on('mouseenter', () => { document.body.style.cursor = 'pointer'; });
+    labBtn.on('mouseleave', () => { document.body.style.cursor = 'default'; });
+    this.combatLayer.add(labBtn);
+
+    // Restart button (skip lab)
+    const restartBtn = new Konva.Group({ x: w / 2 - 60, y: h * 0.62 });
     restartBtn.add(new Konva.Rect({
-      width: 140, height: 44,
-      fill: isVictory ? '#27AE60' : '#E74C3C', cornerRadius: 6,
+      width: 120, height: 32,
+      fill: 'transparent', stroke: '#555', strokeWidth: 1, cornerRadius: 4,
     }));
     restartBtn.add(new Konva.Text({
-      text: 'New Run',
-      fontSize: 16, fill: '#fff',
-      width: 140, height: 44,
+      text: 'Restart',
+      fontSize: 12, fill: '#888',
+      width: 120, height: 32,
       align: 'center', verticalAlign: 'middle',
     }));
     restartBtn.on('click tap', () => { this.emit('restart'); });
     restartBtn.on('mouseenter', () => { document.body.style.cursor = 'pointer'; });
     restartBtn.on('mouseleave', () => { document.body.style.cursor = 'default'; });
     this.combatLayer.add(restartBtn);
+
+    this.combatLayer.draw();
+  }
+
+  /**
+   * Render the Laboratory between-run hub.
+   */
+  renderLaboratory(G) {
+    this.combatLayer.destroyChildren();
+
+    const w = this.stage.width();
+    const h = this.stage.height();
+    const rl = this._roguelikeData || {};
+
+    // Title
+    this.combatLayer.add(new Konva.Text({
+      text: 'THE LABORATORY',
+      fontSize: 24, fill: '#F4D03F', fontStyle: 'bold',
+      x: 0, y: 20, width: w, align: 'center',
+      letterSpacing: 3,
+    }));
+
+    // Currency display
+    this.combatLayer.add(new Konva.Text({
+      text: `Insight: ${G.meta.insight}    Materials: ${G.meta.materials}`,
+      fontSize: 16, fill: '#ccc',
+      x: 0, y: 52, width: w, align: 'center',
+    }));
+
+    const panelY = 90;
+    const panelH = h - 170;
+
+    // --- LEFT PANEL: Run Stats ---
+    const statsX = 30;
+    const statsW = 200;
+
+    this.combatLayer.add(new Konva.Rect({
+      x: statsX, y: panelY, width: statsW, height: panelH,
+      fill: '#12121f', stroke: '#2a2a3a', strokeWidth: 1, cornerRadius: 8,
+    }));
+
+    this.combatLayer.add(new Konva.Text({
+      text: 'RUN STATS', fontSize: 11, fill: '#555', fontStyle: 'bold',
+      x: statsX + 12, y: panelY + 10, letterSpacing: 2,
+    }));
+
+    const statLines = [
+      `Total Runs: ${G.meta.totalRuns}`,
+      `Victories: ${G.meta.totalVictories}`,
+      '',
+      'Last Run:',
+      `  +${G.run.insightEarned} Insight`,
+      `  +${G.run.materialsEarned} Materials`,
+      '',
+      'School Mastery:',
+    ];
+
+    // Add school mastery entries
+    for (const [typeId, mastery] of Object.entries(G.meta.schoolMastery)) {
+      const type = G.catalog.types.find(t => t.id === parseInt(typeId));
+      const name = type ? type.name : `Type ${typeId}`;
+      statLines.push(`  ${name}: ${mastery.victories}W / ${mastery.runs}R`);
+    }
+
+    this.combatLayer.add(new Konva.Text({
+      text: statLines.join('\n'),
+      fontSize: 12, fill: '#aaa', lineHeight: 1.5,
+      x: statsX + 12, y: panelY + 30, width: statsW - 24,
+    }));
+
+    // --- CENTER PANEL: Research Desk ---
+    const researchX = statsX + statsW + 20;
+    const researchW = Math.min(400, w - researchX - 280);
+
+    this.combatLayer.add(new Konva.Rect({
+      x: researchX, y: panelY, width: researchW, height: panelH,
+      fill: '#12121f', stroke: '#2a2a3a', strokeWidth: 1, cornerRadius: 8,
+    }));
+
+    this.combatLayer.add(new Konva.Text({
+      text: 'RESEARCH DESK', fontSize: 11, fill: '#555', fontStyle: 'bold',
+      x: researchX + 12, y: panelY + 10, letterSpacing: 2,
+    }));
+
+    const researchItems = rl.research || [];
+    let itemY = panelY + 35;
+    const itemH = 65;
+
+    for (const item of researchItems) {
+      if (itemY + itemH > panelY + panelH - 10) break; // overflow guard
+
+      const purchaseCount = G.meta.unlockedResearch.filter(id => id === item.id).length;
+      const maxed = purchaseCount >= item.max_purchases;
+      const canAfford = G.meta.insight >= item.insight_cost &&
+                        G.meta.materials >= (item.material_cost || 0);
+
+      const itemGroup = new Konva.Group({ x: researchX + 10, y: itemY });
+
+      // Background
+      itemGroup.add(new Konva.Rect({
+        width: researchW - 20, height: itemH - 5,
+        fill: maxed ? '#0f1a0f' : (canAfford ? '#1a2a14' : '#1a1a2e'),
+        stroke: maxed ? '#2a3a2a' : (canAfford ? '#3a6a3a' : '#2a2a3a'),
+        strokeWidth: 1, cornerRadius: 6,
+      }));
+
+      // Name + description
+      itemGroup.add(new Konva.Text({
+        text: `${maxed ? '✓ ' : ''}${item.name}`,
+        fontSize: 13, fill: maxed ? '#5a8a5a' : '#e0e0e0', fontStyle: 'bold',
+        x: 10, y: 6, width: researchW - 110,
+      }));
+      itemGroup.add(new Konva.Text({
+        text: item.description,
+        fontSize: 10, fill: '#888',
+        x: 10, y: 22, width: researchW - 110,
+      }));
+
+      // Cost
+      const costText = `${item.insight_cost} Insight${item.material_cost ? ` + ${item.material_cost} Mat` : ''}`;
+      itemGroup.add(new Konva.Text({
+        text: costText,
+        fontSize: 10, fill: canAfford ? '#F4D03F' : '#884444',
+        x: 10, y: 40,
+      }));
+
+      // Purchases count
+      itemGroup.add(new Konva.Text({
+        text: `${purchaseCount}/${item.max_purchases}`,
+        fontSize: 10, fill: '#666',
+        x: researchW - 60, y: 6,
+      }));
+
+      // Buy button
+      if (!maxed && canAfford) {
+        const btn = new Konva.Group({ x: researchW - 75, y: 30 });
+        btn.add(new Konva.Rect({
+          width: 55, height: 22,
+          fill: '#27AE60', cornerRadius: 4,
+        }));
+        btn.add(new Konva.Text({
+          text: 'Buy', fontSize: 11, fill: '#fff',
+          width: 55, height: 22,
+          align: 'center', verticalAlign: 'middle',
+        }));
+        const researchId = item.id;
+        btn.on('click tap', () => { this.emit('purchaseResearch', researchId); });
+        btn.on('mouseenter', () => { document.body.style.cursor = 'pointer'; });
+        btn.on('mouseleave', () => { document.body.style.cursor = 'default'; });
+        itemGroup.add(btn);
+      }
+
+      this.combatLayer.add(itemGroup);
+      itemY += itemH;
+    }
+
+    // --- RIGHT PANEL: Unlocked Branches ---
+    const unlockX = researchX + researchW + 20;
+    const unlockW = Math.max(200, w - unlockX - 30);
+
+    this.combatLayer.add(new Konva.Rect({
+      x: unlockX, y: panelY, width: unlockW, height: panelH,
+      fill: '#12121f', stroke: '#2a2a3a', strokeWidth: 1, cornerRadius: 8,
+    }));
+
+    this.combatLayer.add(new Konva.Text({
+      text: 'UNLOCKED BRANCHES', fontSize: 11, fill: '#555', fontStyle: 'bold',
+      x: unlockX + 12, y: panelY + 10, letterSpacing: 2,
+    }));
+
+    const metaUnlocks = rl.metaUnlocks || [];
+    let unlockY = panelY + 35;
+    for (const mu of metaUnlocks) {
+      const isUnlocked = G.meta.unlockedMeta.includes(mu.id);
+      this.combatLayer.add(new Konva.Text({
+        text: `${isUnlocked ? '✓' : '○'} ${mu.name}`,
+        fontSize: 12,
+        fill: isUnlocked ? '#5dde5d' : '#444',
+        x: unlockX + 12, y: unlockY,
+        width: unlockW - 24,
+      }));
+      unlockY += 20;
+    }
+
+    // --- START NEXT RUN button ---
+    const btnW = 200;
+    const startBtn = new Konva.Group({ x: w / 2 - btnW / 2, y: h - 65 });
+    startBtn.add(new Konva.Rect({
+      width: btnW, height: 44,
+      fill: '#27AE60', cornerRadius: 6,
+    }));
+    startBtn.add(new Konva.Text({
+      text: 'Start Next Run',
+      fontSize: 16, fill: '#fff',
+      width: btnW, height: 44,
+      align: 'center', verticalAlign: 'middle',
+    }));
+    startBtn.on('click tap', () => { this.emit('startNextRun'); });
+    startBtn.on('mouseenter', () => { document.body.style.cursor = 'pointer'; });
+    startBtn.on('mouseleave', () => { document.body.style.cursor = 'default'; });
+    this.combatLayer.add(startBtn);
 
     this.combatLayer.draw();
   }

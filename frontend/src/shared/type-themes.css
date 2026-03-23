@@ -1,0 +1,276 @@
+/*
+ * Type Theme Stylesheet — Wizard Game
+ *
+ * CSS custom properties and utility classes for all 16 types.
+ * Each type gets: --{type}-primary, --{type}-secondary, --{type}-accent,
+ * plus .type-{name} utility classes for backgrounds, text, and borders.
+ *
+ * Generated from database visual design attributes.
+ */
+
+/* ═══════════════════════════════════════════
+   Custom Properties (Global)
+   ═══════════════════════════════════════════ */
+:root {
+  /* --- Primary Types --- */
+  --fire-primary:       #E74C3C;
+  --fire-secondary:     #C0392B;
+  --fire-accent:        #F39C12;
+  --fire-text:          #ffffff;
+
+  --earth-primary:      #A0522D;
+  --earth-secondary:    #7D3C14;
+  --earth-accent:       #D4A76A;
+  --earth-text:         #ffffff;
+
+  --water-primary:      #2E86C1;
+  --water-secondary:    #1B4F72;
+  --water-accent:       #5DADE2;
+  --water-text:         #ffffff;
+
+  --air-primary:        #AED6F1;
+  --air-secondary:      #7FB3D8;
+  --air-accent:         #D4E6F1;
+  --air-text:           #1a1a2e;
+
+  /* --- Secondary Types --- */
+  --metal-primary:      #808B96;
+  --metal-secondary:    #5D6C7B;
+  --metal-accent:       #BDC3C7;
+  --metal-text:         #1a1a2e;
+
+  --plant-primary:      #27AE60;
+  --plant-secondary:    #1E8449;
+  --plant-accent:       #58D68D;
+  --plant-text:         #ffffff;
+
+  --ice-primary:        #85C1E9;
+  --ice-secondary:      #5DADE2;
+  --ice-accent:         #D6EAF8;
+  --ice-text:           #1a1a2e;
+
+  --electric-primary:   #F4D03F;
+  --electric-secondary: #D4AC0D;
+  --electric-accent:    #FEF9E7;
+  --electric-text:      #1a1a2e;
+
+  /* --- Tertiary Types --- */
+  --radioactive-primary:   #B7FF00;
+  --radioactive-secondary: #8CC800;
+  --radioactive-accent:    #DFFF4F;
+  --radioactive-text:      #1a1a2e;
+
+  --cosmic-primary:     #7D3C98;
+  --cosmic-secondary:   #5B2C6F;
+  --cosmic-accent:      #A569BD;
+  --cosmic-text:        #ffffff;
+
+  --poison-primary:     #884EA0;
+  --poison-secondary:   #6C3483;
+  --poison-accent:      #C39BD3;
+  --poison-text:        #ffffff;
+
+  --sound-primary:      #E91E63;
+  --sound-secondary:    #C2185B;
+  --sound-accent:       #FF6B9D;
+  --sound-text:         #ffffff;
+
+  --crystal-primary:    #1ABC9C;
+  --crystal-secondary:  #148F77;
+  --crystal-accent:     #48C9B0;
+  --crystal-text:       #ffffff;
+
+  --ghost-primary:      #5D6D7E;
+  --ghost-secondary:    #34495E;
+  --ghost-accent:       #85929E;
+  --ghost-text:         #ffffff;
+
+  --heat-primary:       #E67E22;
+  --heat-secondary:     #CA6F1E;
+  --heat-accent:        #F0B27A;
+  --heat-text:          #ffffff;
+
+  --magnetic-primary:   #2E4053;
+  --magnetic-secondary: #1B2631;
+  --magnetic-accent:    #5D6D7E;
+  --magnetic-text:      #ffffff;
+}
+
+
+/* ═══════════════════════════════════════════
+   Type Background Classes
+   .type-bg-{name} — fills background with primary, sets text color
+   ═══════════════════════════════════════════ */
+.type-bg-fire        { background: var(--fire-primary);        color: var(--fire-text); }
+.type-bg-earth       { background: var(--earth-primary);       color: var(--earth-text); }
+.type-bg-water       { background: var(--water-primary);       color: var(--water-text); }
+.type-bg-air         { background: var(--air-primary);         color: var(--air-text); }
+.type-bg-metal       { background: var(--metal-primary);       color: var(--metal-text); }
+.type-bg-plant       { background: var(--plant-primary);       color: var(--plant-text); }
+.type-bg-ice         { background: var(--ice-primary);         color: var(--ice-text); }
+.type-bg-electric    { background: var(--electric-primary);    color: var(--electric-text); }
+.type-bg-radioactive { background: var(--radioactive-primary); color: var(--radioactive-text); }
+.type-bg-cosmic      { background: var(--cosmic-primary);      color: var(--cosmic-text); }
+.type-bg-poison      { background: var(--poison-primary);      color: var(--poison-text); }
+.type-bg-sound       { background: var(--sound-primary);       color: var(--sound-text); }
+.type-bg-crystal     { background: var(--crystal-primary);     color: var(--crystal-text); }
+.type-bg-ghost       { background: var(--ghost-primary);       color: var(--ghost-text); }
+.type-bg-heat        { background: var(--heat-primary);        color: var(--heat-text); }
+.type-bg-magnetic    { background: var(--magnetic-primary);    color: var(--magnetic-text); }
+
+
+/* ═══════════════════════════════════════════
+   Type Text Classes
+   .type-text-{name} — colors text with primary
+   ═══════════════════════════════════════════ */
+.type-text-fire        { color: var(--fire-primary); }
+.type-text-earth       { color: var(--earth-primary); }
+.type-text-water       { color: var(--water-primary); }
+.type-text-air         { color: var(--air-primary); }
+.type-text-metal       { color: var(--metal-primary); }
+.type-text-plant       { color: var(--plant-primary); }
+.type-text-ice         { color: var(--ice-primary); }
+.type-text-electric    { color: var(--electric-primary); }
+.type-text-radioactive { color: var(--radioactive-primary); }
+.type-text-cosmic      { color: var(--cosmic-primary); }
+.type-text-poison      { color: var(--poison-primary); }
+.type-text-sound       { color: var(--sound-primary); }
+.type-text-crystal     { color: var(--crystal-primary); }
+.type-text-ghost       { color: var(--ghost-primary); }
+.type-text-heat        { color: var(--heat-primary); }
+.type-text-magnetic    { color: var(--magnetic-primary); }
+
+
+/* ═══════════════════════════════════════════
+   Type Border Classes
+   .type-border-{name} — primary-colored border
+   ═══════════════════════════════════════════ */
+.type-border-fire        { border-color: var(--fire-primary); }
+.type-border-earth       { border-color: var(--earth-primary); }
+.type-border-water       { border-color: var(--water-primary); }
+.type-border-air         { border-color: var(--air-primary); }
+.type-border-metal       { border-color: var(--metal-primary); }
+.type-border-plant       { border-color: var(--plant-primary); }
+.type-border-ice         { border-color: var(--ice-primary); }
+.type-border-electric    { border-color: var(--electric-primary); }
+.type-border-radioactive { border-color: var(--radioactive-primary); }
+.type-border-cosmic      { border-color: var(--cosmic-primary); }
+.type-border-poison      { border-color: var(--poison-primary); }
+.type-border-sound       { border-color: var(--sound-primary); }
+.type-border-crystal     { border-color: var(--crystal-primary); }
+.type-border-ghost       { border-color: var(--ghost-primary); }
+.type-border-heat        { border-color: var(--heat-primary); }
+.type-border-magnetic    { border-color: var(--magnetic-primary); }
+
+
+/* ═══════════════════════════════════════════
+   Type Gradient Classes
+   .type-gradient-{name} — primary→secondary gradient
+   ═══════════════════════════════════════════ */
+.type-gradient-fire        { background: linear-gradient(135deg, var(--fire-primary), var(--fire-secondary));               color: var(--fire-text); }
+.type-gradient-earth       { background: linear-gradient(135deg, var(--earth-primary), var(--earth-secondary));             color: var(--earth-text); }
+.type-gradient-water       { background: linear-gradient(135deg, var(--water-primary), var(--water-secondary));             color: var(--water-text); }
+.type-gradient-air         { background: linear-gradient(135deg, var(--air-primary), var(--air-secondary));                 color: var(--air-text); }
+.type-gradient-metal       { background: linear-gradient(135deg, var(--metal-primary), var(--metal-secondary));             color: var(--metal-text); }
+.type-gradient-plant       { background: linear-gradient(135deg, var(--plant-primary), var(--plant-secondary));             color: var(--plant-text); }
+.type-gradient-ice         { background: linear-gradient(135deg, var(--ice-primary), var(--ice-secondary));                 color: var(--ice-text); }
+.type-gradient-electric    { background: linear-gradient(135deg, var(--electric-primary), var(--electric-secondary));       color: var(--electric-text); }
+.type-gradient-radioactive { background: linear-gradient(135deg, var(--radioactive-primary), var(--radioactive-secondary)); color: var(--radioactive-text); }
+.type-gradient-cosmic      { background: linear-gradient(135deg, var(--cosmic-primary), var(--cosmic-secondary));           color: var(--cosmic-text); }
+.type-gradient-poison      { background: linear-gradient(135deg, var(--poison-primary), var(--poison-secondary));           color: var(--poison-text); }
+.type-gradient-sound       { background: linear-gradient(135deg, var(--sound-primary), var(--sound-secondary));             color: var(--sound-text); }
+.type-gradient-crystal     { background: linear-gradient(135deg, var(--crystal-primary), var(--crystal-secondary));         color: var(--crystal-text); }
+.type-gradient-ghost       { background: linear-gradient(135deg, var(--ghost-primary), var(--ghost-secondary));             color: var(--ghost-text); }
+.type-gradient-heat        { background: linear-gradient(135deg, var(--heat-primary), var(--heat-secondary));               color: var(--heat-text); }
+.type-gradient-magnetic    { background: linear-gradient(135deg, var(--magnetic-primary), var(--magnetic-secondary));       color: var(--magnetic-text); }
+
+
+/* ═══════════════════════════════════════════
+   Type Card Classes
+   .type-card-{name} — styled card with border accent
+   ═══════════════════════════════════════════ */
+.type-card-fire        { border-left: 4px solid var(--fire-primary);        background: linear-gradient(90deg, rgba(231,76,60,0.08), transparent); }
+.type-card-earth       { border-left: 4px solid var(--earth-primary);       background: linear-gradient(90deg, rgba(160,82,45,0.08), transparent); }
+.type-card-water       { border-left: 4px solid var(--water-primary);       background: linear-gradient(90deg, rgba(46,134,193,0.08), transparent); }
+.type-card-air         { border-left: 4px solid var(--air-primary);         background: linear-gradient(90deg, rgba(174,214,241,0.08), transparent); }
+.type-card-metal       { border-left: 4px solid var(--metal-primary);       background: linear-gradient(90deg, rgba(128,139,150,0.08), transparent); }
+.type-card-plant       { border-left: 4px solid var(--plant-primary);       background: linear-gradient(90deg, rgba(39,174,96,0.08), transparent); }
+.type-card-ice         { border-left: 4px solid var(--ice-primary);         background: linear-gradient(90deg, rgba(133,193,233,0.08), transparent); }
+.type-card-electric    { border-left: 4px solid var(--electric-primary);    background: linear-gradient(90deg, rgba(244,208,63,0.08), transparent); }
+.type-card-radioactive { border-left: 4px solid var(--radioactive-primary); background: linear-gradient(90deg, rgba(183,255,0,0.08), transparent); }
+.type-card-cosmic      { border-left: 4px solid var(--cosmic-primary);      background: linear-gradient(90deg, rgba(125,60,152,0.08), transparent); }
+.type-card-poison      { border-left: 4px solid var(--poison-primary);      background: linear-gradient(90deg, rgba(136,78,160,0.08), transparent); }
+.type-card-sound       { border-left: 4px solid var(--sound-primary);       background: linear-gradient(90deg, rgba(233,30,99,0.08), transparent); }
+.type-card-crystal     { border-left: 4px solid var(--crystal-primary);     background: linear-gradient(90deg, rgba(26,188,156,0.08), transparent); }
+.type-card-ghost       { border-left: 4px solid var(--ghost-primary);       background: linear-gradient(90deg, rgba(93,109,126,0.08), transparent); }
+.type-card-heat        { border-left: 4px solid var(--heat-primary);        background: linear-gradient(90deg, rgba(230,126,34,0.08), transparent); }
+.type-card-magnetic    { border-left: 4px solid var(--magnetic-primary);    background: linear-gradient(90deg, rgba(46,64,83,0.08), transparent); }
+
+
+/* ═══════════════════════════════════════════
+   Type Glow Classes
+   .type-glow-{name} — box shadow glow effect
+   ═══════════════════════════════════════════ */
+.type-glow-fire        { box-shadow: 0 0 12px rgba(231,76,60,0.4),  0 0 24px rgba(231,76,60,0.15); }
+.type-glow-earth       { box-shadow: 0 0 12px rgba(160,82,45,0.4),  0 0 24px rgba(160,82,45,0.15); }
+.type-glow-water       { box-shadow: 0 0 12px rgba(46,134,193,0.4), 0 0 24px rgba(46,134,193,0.15); }
+.type-glow-air         { box-shadow: 0 0 12px rgba(174,214,241,0.4),0 0 24px rgba(174,214,241,0.15); }
+.type-glow-metal       { box-shadow: 0 0 12px rgba(128,139,150,0.4),0 0 24px rgba(128,139,150,0.15); }
+.type-glow-plant       { box-shadow: 0 0 12px rgba(39,174,96,0.4),  0 0 24px rgba(39,174,96,0.15); }
+.type-glow-ice         { box-shadow: 0 0 12px rgba(133,193,233,0.4),0 0 24px rgba(133,193,233,0.15); }
+.type-glow-electric    { box-shadow: 0 0 12px rgba(244,208,63,0.4), 0 0 24px rgba(244,208,63,0.15); }
+.type-glow-radioactive { box-shadow: 0 0 12px rgba(183,255,0,0.4),  0 0 24px rgba(183,255,0,0.15); }
+.type-glow-cosmic      { box-shadow: 0 0 12px rgba(125,60,152,0.4), 0 0 24px rgba(125,60,152,0.15); }
+.type-glow-poison      { box-shadow: 0 0 12px rgba(136,78,160,0.4), 0 0 24px rgba(136,78,160,0.15); }
+.type-glow-sound       { box-shadow: 0 0 12px rgba(233,30,99,0.4),  0 0 24px rgba(233,30,99,0.15); }
+.type-glow-crystal     { box-shadow: 0 0 12px rgba(26,188,156,0.4), 0 0 24px rgba(26,188,156,0.15); }
+.type-glow-ghost       { box-shadow: 0 0 12px rgba(93,109,126,0.4), 0 0 24px rgba(93,109,126,0.15); }
+.type-glow-heat        { box-shadow: 0 0 12px rgba(230,126,34,0.4), 0 0 24px rgba(230,126,34,0.15); }
+.type-glow-magnetic    { box-shadow: 0 0 12px rgba(46,64,83,0.4),   0 0 24px rgba(46,64,83,0.15); }
+
+
+/* ═══════════════════════════════════════════
+   Type Badge Classes
+   .type-badge-{name} — small pill/tag badges
+   ═══════════════════════════════════════════ */
+.type-badge-fire,
+.type-badge-earth,
+.type-badge-water,
+.type-badge-air,
+.type-badge-metal,
+.type-badge-plant,
+.type-badge-ice,
+.type-badge-electric,
+.type-badge-radioactive,
+.type-badge-cosmic,
+.type-badge-poison,
+.type-badge-sound,
+.type-badge-crystal,
+.type-badge-ghost,
+.type-badge-heat,
+.type-badge-magnetic {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+.type-badge-fire        { background: rgba(231,76,60,0.2);  color: #E74C3C; border: 1px solid rgba(231,76,60,0.3); }
+.type-badge-earth       { background: rgba(160,82,45,0.2);  color: #D4A76A; border: 1px solid rgba(160,82,45,0.3); }
+.type-badge-water       { background: rgba(46,134,193,0.2); color: #5DADE2; border: 1px solid rgba(46,134,193,0.3); }
+.type-badge-air         { background: rgba(174,214,241,0.2);color: #AED6F1; border: 1px solid rgba(174,214,241,0.3); }
+.type-badge-metal       { background: rgba(128,139,150,0.2);color: #BDC3C7; border: 1px solid rgba(128,139,150,0.3); }
+.type-badge-plant       { background: rgba(39,174,96,0.2);  color: #58D68D; border: 1px solid rgba(39,174,96,0.3); }
+.type-badge-ice         { background: rgba(133,193,233,0.2);color: #85C1E9; border: 1px solid rgba(133,193,233,0.3); }
+.type-badge-electric    { background: rgba(244,208,63,0.2); color: #F4D03F; border: 1px solid rgba(244,208,63,0.3); }
+.type-badge-radioactive { background: rgba(183,255,0,0.2);  color: #B7FF00; border: 1px solid rgba(183,255,0,0.3); }
+.type-badge-cosmic      { background: rgba(125,60,152,0.2); color: #A569BD; border: 1px solid rgba(125,60,152,0.3); }
+.type-badge-poison      { background: rgba(136,78,160,0.2); color: #C39BD3; border: 1px solid rgba(136,78,160,0.3); }
+.type-badge-sound       { background: rgba(233,30,99,0.2);  color: #FF6B9D; border: 1px solid rgba(233,30,99,0.3); }
+.type-badge-crystal     { background: rgba(26,188,156,0.2); color: #48C9B0; border: 1px solid rgba(26,188,156,0.3); }
+.type-badge-ghost       { background: rgba(93,109,126,0.2); color: #85929E; border: 1px solid rgba(93,109,126,0.3); }
+.type-badge-heat        { background: rgba(230,126,34,0.2); color: #F0B27A; border: 1px solid rgba(230,126,34,0.3); }
+.type-badge-magnetic    { background: rgba(46,64,83,0.2);   color: #5D6D7E; border: 1px solid rgba(46,64,83,0.3); }
