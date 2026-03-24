@@ -2936,6 +2936,16 @@ ROGUELIKE_META_UNLOCKS = [
     ('Newton Unlock',    'Defeated Newton, Earth Head Wizard — now playable',   2, 'character', 'Earth', 'Newton'),
     ('Archimedes Unlock', 'Defeated Archimedes, Water Head Wizard — now playable', 2, 'character', 'Water', 'Archimedes'),
     ('Boyle Unlock',     'Defeated Boyle, Air Head Wizard — now playable',      2, 'character', 'Air',   'Boyle'),
+
+    # Layer 4: Tertiary type unlocks (dark side of each primary/secondary)
+    ('Radioactive Awakening', 'The dark side of Fire revealed — nuclear decay',          4, 'tertiary', 'Radioactive', None),
+    ('Cosmic Awakening',      'The dark side of Earth revealed — gravity and space',     4, 'tertiary', 'Cosmic',      None),
+    ('Poison Awakening',      'The dark side of Water revealed — toxic reactions',       4, 'tertiary', 'Poison',      None),
+    ('Sound Awakening',       'The dark side of Air revealed — acoustic destruction',    4, 'tertiary', 'Sound',       None),
+    ('Crystal Awakening',     'The dark side of Metal revealed — lattice resonance',     4, 'tertiary', 'Crystal',     None),
+    ('Ghost Awakening',       'The dark side of Plant revealed — entropy and decay',     4, 'tertiary', 'Ghost',       None),
+    ('Heat Awakening',        'The dark side of Ice revealed — thermodynamic reversal',  4, 'tertiary', 'Heat',        None),
+    ('Magnetic Awakening',    'The dark side of Electric revealed — magnetic force',     4, 'tertiary', 'Magnetic',    None),
 ]
 
 # (meta_unlock_name, condition_type, condition_type_name, condition_value, condition_type_b_name, description)
@@ -2957,6 +2967,16 @@ ROGUELIKE_META_CONDITIONS = [
     ('Newton Unlock',     'tower_victory', 'Earth', None, None, 'Defeat Newton in Earth Tower'),
     ('Archimedes Unlock', 'tower_victory', 'Water', None, None, 'Defeat Archimedes in Water Tower'),
     ('Boyle Unlock',      'tower_victory', 'Air',   None, None, 'Defeat Boyle in Air Tower'),
+
+    # Tertiary unlocks require mastery level 3+ on the parent type's tower
+    ('Radioactive Awakening', 'tower_mastery', 'Fire',     3, None, 'Reach Fire Tower mastery level 3'),
+    ('Cosmic Awakening',      'tower_mastery', 'Earth',    3, None, 'Reach Earth Tower mastery level 3'),
+    ('Poison Awakening',      'tower_mastery', 'Water',    3, None, 'Reach Water Tower mastery level 3'),
+    ('Sound Awakening',       'tower_mastery', 'Air',      3, None, 'Reach Air Tower mastery level 3'),
+    ('Crystal Awakening',     'tower_mastery', 'Metal',    3, None, 'Reach Metal mastery level 3'),
+    ('Ghost Awakening',       'tower_mastery', 'Plant',    3, None, 'Reach Plant mastery level 3'),
+    ('Heat Awakening',        'tower_mastery', 'Ice',      3, None, 'Reach Ice mastery level 3'),
+    ('Magnetic Awakening',    'tower_mastery', 'Electric', 3, None, 'Reach Electric mastery level 3'),
 ]
 
 # (level, name, description, modifier_type, modifier_value)
@@ -3182,6 +3202,238 @@ ROGUELIKE_NODES = [
      'Air+Water cross-type spells appear in rewards.',
      'Frost crystallizes in the breeze.',
      'Air', 'spell_pool', 3, 'air_water', 'meta', 'Water Branch', 76),
+
+    # === METAL TREE (secondary, beyond Metal Gate) ===
+    ('Metal Foundations',
+     'Basic metalworking. The forge awakens.',
+     'Raw ore yields to your will.',
+     'Metal', 'energy', 5, 'core', 'meta', 'Metal Discovery', 80),
+
+    ('Metal Resilience',
+     '+1 Block on all Metal spells.',
+     'Steel bends but does not break.',
+     'Metal', 'passive', 5, 'core', 'meta', 'Metal Discovery', 81),
+
+    ('Metal Forging',
+     '+1 max Metal energy per turn.',
+     'The crucible burns without end.',
+     'Metal', 'energy', 6, 'core', 'meta', 'Metal Discovery', 82),
+
+    ('Metal Spell Expansion',
+     'Stronger Metal spells appear in reward pool.',
+     'Alloys whisper their secrets.',
+     'Metal', 'spell_pool', 6, 'core', 'meta', 'Metal Discovery', 83),
+
+    # === PLANT TREE (secondary, beyond Plant Gate) ===
+    ('Plant Growth',
+     'Basic botanical magic. Life stirs.',
+     'Green tendrils answer your call.',
+     'Plant', 'energy', 5, 'core', 'meta', 'Plant Discovery', 85),
+
+    ('Plant Regeneration',
+     'Heal 2 HP after each combat when Plant spells were cast.',
+     'Wounds close like budding flowers.',
+     'Plant', 'passive', 5, 'core', 'meta', 'Plant Discovery', 86),
+
+    ('Plant Deepening',
+     '+1 max Plant energy per turn.',
+     'Roots reach the water table.',
+     'Plant', 'energy', 6, 'core', 'meta', 'Plant Discovery', 87),
+
+    ('Plant Spell Expansion',
+     'Stronger Plant spells appear in reward pool.',
+     'The forest teaches new growth.',
+     'Plant', 'spell_pool', 6, 'core', 'meta', 'Plant Discovery', 88),
+
+    # === ICE TREE (secondary, beyond Ice Gate) ===
+    ('Ice Formation',
+     'Basic cryomancy. Temperature plummets.',
+     'Frost spreads at your touch.',
+     'Ice', 'energy', 5, 'core', 'meta', 'Ice Discovery', 90),
+
+    ('Ice Chill',
+     'Ice spells apply 1 Weakness to targets.',
+     'Cold slows everything.',
+     'Ice', 'passive', 5, 'core', 'meta', 'Ice Discovery', 91),
+
+    ('Ice Deepening',
+     '+1 max Ice energy per turn.',
+     'The glacier advances.',
+     'Ice', 'energy', 6, 'core', 'meta', 'Ice Discovery', 92),
+
+    ('Ice Spell Expansion',
+     'Stronger Ice spells appear in reward pool.',
+     'Crystalline patterns reveal new forms.',
+     'Ice', 'spell_pool', 6, 'core', 'meta', 'Ice Discovery', 93),
+
+    # === ELECTRIC TREE (secondary, beyond Electric Gate) ===
+    ('Electric Spark',
+     'Basic electromancy. Current flows.',
+     'Lightning dances at your fingertips.',
+     'Electric', 'energy', 5, 'core', 'meta', 'Electric Discovery', 95),
+
+    ('Electric Surge',
+     '+2 damage on all Electric spells.',
+     'Voltage amplifies through the circuit.',
+     'Electric', 'passive', 5, 'core', 'meta', 'Electric Discovery', 96),
+
+    ('Electric Deepening',
+     '+1 max Electric energy per turn.',
+     'The current never stops.',
+     'Electric', 'energy', 6, 'core', 'meta', 'Electric Discovery', 97),
+
+    ('Electric Spell Expansion',
+     'Stronger Electric spells appear in reward pool.',
+     'New frequencies hum with power.',
+     'Electric', 'spell_pool', 6, 'core', 'meta', 'Electric Discovery', 98),
+
+    # === TERTIARY TREES (dark side of each primary) ===
+
+    # Radioactive (dark Fire)
+    ('Radioactive Emergence',
+     'Nuclear energy stirs. The dark side of fire.',
+     'Atoms split at your command.',
+     'Radioactive', 'energy', 7, 'core', 'meta', 'Radioactive Awakening', 100),
+    ('Radioactive Decay',
+     'Radioactive spells deal +2 damage and apply DoT.',
+     'What burns never truly stops.',
+     'Radioactive', 'passive', 7, 'core', 'meta', 'Radioactive Awakening', 101),
+    ('Radioactive Mastery',
+     '+1 max Radioactive energy per turn.',
+     'You harness the half-life.',
+     'Radioactive', 'energy', 8, 'core', 'meta', 'Radioactive Awakening', 102),
+    ('Radioactive Spells',
+     'Radioactive spells appear in reward pool.',
+     'Forbidden formulas glow green.',
+     'Radioactive', 'spell_pool', 8, 'core', 'meta', 'Radioactive Awakening', 103),
+
+    # Cosmic (dark Earth)
+    ('Cosmic Emergence',
+     'Gravitational forces awaken. The dark side of earth.',
+     'Space bends around you.',
+     'Cosmic', 'energy', 7, 'core', 'meta', 'Cosmic Awakening', 105),
+    ('Cosmic Gravity',
+     'Cosmic spells pull enemies together and reduce evasion.',
+     'Nothing escapes the well.',
+     'Cosmic', 'passive', 7, 'core', 'meta', 'Cosmic Awakening', 106),
+    ('Cosmic Mastery',
+     '+1 max Cosmic energy per turn.',
+     'You shape the fabric itself.',
+     'Cosmic', 'energy', 8, 'core', 'meta', 'Cosmic Awakening', 107),
+    ('Cosmic Spells',
+     'Cosmic spells appear in reward pool.',
+     'Constellations rearrange.',
+     'Cosmic', 'spell_pool', 8, 'core', 'meta', 'Cosmic Awakening', 108),
+
+    # Poison (dark Water)
+    ('Poison Emergence',
+     'Toxic chemistry stirs. The dark side of water.',
+     'The current turns venomous.',
+     'Poison', 'energy', 7, 'core', 'meta', 'Poison Awakening', 110),
+    ('Poison Potency',
+     'Poison spells stack additional DoT on targets.',
+     'Each drop compounds.',
+     'Poison', 'passive', 7, 'core', 'meta', 'Poison Awakening', 111),
+    ('Poison Mastery',
+     '+1 max Poison energy per turn.',
+     'Toxins flow freely.',
+     'Poison', 'energy', 8, 'core', 'meta', 'Poison Awakening', 112),
+    ('Poison Spells',
+     'Poison spells appear in reward pool.',
+     'Recipes for ruin.',
+     'Poison', 'spell_pool', 8, 'core', 'meta', 'Poison Awakening', 113),
+
+    # Sound (dark Air)
+    ('Sound Emergence',
+     'Acoustic force builds. The dark side of air.',
+     'The silence breaks.',
+     'Sound', 'energy', 7, 'core', 'meta', 'Sound Awakening', 115),
+    ('Sound Resonance',
+     'Sound spells deal AoE damage to all enemies.',
+     'Everything vibrates at a frequency.',
+     'Sound', 'passive', 7, 'core', 'meta', 'Sound Awakening', 116),
+    ('Sound Mastery',
+     '+1 max Sound energy per turn.',
+     'You hear the frequency of all things.',
+     'Sound', 'energy', 8, 'core', 'meta', 'Sound Awakening', 117),
+    ('Sound Spells',
+     'Sound spells appear in reward pool.',
+     'Harmonics of destruction.',
+     'Sound', 'spell_pool', 8, 'core', 'meta', 'Sound Awakening', 118),
+
+    # === TERTIARY TREES (dark side of each secondary) ===
+
+    # Crystal (dark Metal)
+    ('Crystal Emergence',
+     'Lattice structures form. The dark side of metal.',
+     'Geometry becomes weapon.',
+     'Crystal', 'energy', 7, 'core', 'meta', 'Crystal Awakening', 120),
+    ('Crystal Refraction',
+     'Crystal spells split damage across multiple targets.',
+     'Light bends through the lattice.',
+     'Crystal', 'passive', 7, 'core', 'meta', 'Crystal Awakening', 121),
+    ('Crystal Mastery',
+     '+1 max Crystal energy per turn.',
+     'Perfect structure, perfect power.',
+     'Crystal', 'energy', 8, 'core', 'meta', 'Crystal Awakening', 122),
+    ('Crystal Spells',
+     'Crystal spells appear in reward pool.',
+     'Prismatic devastation.',
+     'Crystal', 'spell_pool', 8, 'core', 'meta', 'Crystal Awakening', 123),
+
+    # Ghost (dark Plant)
+    ('Ghost Emergence',
+     'Entropy creeps in. The dark side of life.',
+     'What grows must also decay.',
+     'Ghost', 'energy', 7, 'core', 'meta', 'Ghost Awakening', 125),
+    ('Ghost Drain',
+     'Ghost spells steal HP from enemies.',
+     'Life flows in reverse.',
+     'Ghost', 'passive', 7, 'core', 'meta', 'Ghost Awakening', 126),
+    ('Ghost Mastery',
+     '+1 max Ghost energy per turn.',
+     'You walk between states of being.',
+     'Ghost', 'energy', 8, 'core', 'meta', 'Ghost Awakening', 127),
+    ('Ghost Spells',
+     'Ghost spells appear in reward pool.',
+     'Whispers from the other side.',
+     'Ghost', 'spell_pool', 8, 'core', 'meta', 'Ghost Awakening', 128),
+
+    # Heat (dark Ice)
+    ('Heat Emergence',
+     'Thermodynamics reverses. The dark side of cold.',
+     'What was frozen ignites.',
+     'Heat', 'energy', 7, 'core', 'meta', 'Heat Awakening', 130),
+    ('Heat Transfer',
+     'Heat spells convert enemy block into your damage.',
+     'Energy cannot be destroyed, only redirected.',
+     'Heat', 'passive', 7, 'core', 'meta', 'Heat Awakening', 131),
+    ('Heat Mastery',
+     '+1 max Heat energy per turn.',
+     'Entropy is your ally.',
+     'Heat', 'energy', 8, 'core', 'meta', 'Heat Awakening', 132),
+    ('Heat Spells',
+     'Heat spells appear in reward pool.',
+     'Thermal equations of war.',
+     'Heat', 'spell_pool', 8, 'core', 'meta', 'Heat Awakening', 133),
+
+    # Magnetic (dark Electric)
+    ('Magnetic Emergence',
+     'Magnetic fields awaken. The dark side of lightning.',
+     'Poles align to your will.',
+     'Magnetic', 'energy', 7, 'core', 'meta', 'Magnetic Awakening', 135),
+    ('Magnetic Attraction',
+     'Magnetic spells pull equipment from enemies (debuff).',
+     'What they wield, you command.',
+     'Magnetic', 'passive', 7, 'core', 'meta', 'Magnetic Awakening', 136),
+    ('Magnetic Mastery',
+     '+1 max Magnetic energy per turn.',
+     'The field extends without limit.',
+     'Magnetic', 'energy', 8, 'core', 'meta', 'Magnetic Awakening', 137),
+    ('Magnetic Spells',
+     'Magnetic spells appear in reward pool.',
+     'Invisible forces made manifest.',
+     'Magnetic', 'spell_pool', 8, 'core', 'meta', 'Magnetic Awakening', 138),
 ]
 
 # (node_name, type_name, amount)
@@ -3253,6 +3505,104 @@ ROGUELIKE_NODE_COSTS = [
     ('Air→Water Attunement', 'Air', 20),
     ('Air+Water Insight',    'Air', 25),
     ('Air+Water Insight',    'Water', 15),
+
+    # Metal (costs Fire + Earth, the parent types)
+    ('Metal Foundations',     'Fire', 30),
+    ('Metal Foundations',     'Earth', 30),
+    ('Metal Resilience',     'Fire', 25),
+    ('Metal Resilience',     'Earth', 25),
+    ('Metal Forging',        'Fire', 40),
+    ('Metal Forging',        'Earth', 40),
+    ('Metal Spell Expansion', 'Fire', 35),
+    ('Metal Spell Expansion', 'Earth', 35),
+
+    # Plant (costs Earth + Water)
+    ('Plant Growth',         'Earth', 30),
+    ('Plant Growth',         'Water', 30),
+    ('Plant Regeneration',   'Earth', 25),
+    ('Plant Regeneration',   'Water', 25),
+    ('Plant Deepening',      'Earth', 40),
+    ('Plant Deepening',      'Water', 40),
+    ('Plant Spell Expansion', 'Earth', 35),
+    ('Plant Spell Expansion', 'Water', 35),
+
+    # Ice (costs Water + Air)
+    ('Ice Formation',        'Water', 30),
+    ('Ice Formation',        'Air', 30),
+    ('Ice Chill',            'Water', 25),
+    ('Ice Chill',            'Air', 25),
+    ('Ice Deepening',        'Water', 40),
+    ('Ice Deepening',        'Air', 40),
+    ('Ice Spell Expansion',  'Water', 35),
+    ('Ice Spell Expansion',  'Air', 35),
+
+    # Electric (costs Fire + Air)
+    ('Electric Spark',       'Fire', 30),
+    ('Electric Spark',       'Air', 30),
+    ('Electric Surge',       'Fire', 25),
+    ('Electric Surge',       'Air', 25),
+    ('Electric Deepening',   'Fire', 40),
+    ('Electric Deepening',   'Air', 40),
+    ('Electric Spell Expansion', 'Fire', 35),
+    ('Electric Spell Expansion', 'Air', 35),
+
+    # Tertiary costs (use parent type's energy)
+    # Radioactive (parent: Fire)
+    ('Radioactive Emergence', 'Fire', 60),
+    ('Radioactive Decay',     'Fire', 50),
+    ('Radioactive Mastery',   'Fire', 80),
+    ('Radioactive Spells',    'Fire', 70),
+    # Cosmic (parent: Earth)
+    ('Cosmic Emergence',  'Earth', 60),
+    ('Cosmic Gravity',    'Earth', 50),
+    ('Cosmic Mastery',    'Earth', 80),
+    ('Cosmic Spells',     'Earth', 70),
+    # Poison (parent: Water)
+    ('Poison Emergence',  'Water', 60),
+    ('Poison Potency',    'Water', 50),
+    ('Poison Mastery',    'Water', 80),
+    ('Poison Spells',     'Water', 70),
+    # Sound (parent: Air)
+    ('Sound Emergence',   'Air', 60),
+    ('Sound Resonance',   'Air', 50),
+    ('Sound Mastery',     'Air', 80),
+    ('Sound Spells',      'Air', 70),
+    # Crystal (parent: Metal = Fire+Earth)
+    ('Crystal Emergence',   'Fire', 40),
+    ('Crystal Emergence',   'Earth', 40),
+    ('Crystal Refraction',  'Fire', 35),
+    ('Crystal Refraction',  'Earth', 35),
+    ('Crystal Mastery',     'Fire', 50),
+    ('Crystal Mastery',     'Earth', 50),
+    ('Crystal Spells',      'Fire', 45),
+    ('Crystal Spells',      'Earth', 45),
+    # Ghost (parent: Plant = Earth+Water)
+    ('Ghost Emergence', 'Earth', 40),
+    ('Ghost Emergence', 'Water', 40),
+    ('Ghost Drain',     'Earth', 35),
+    ('Ghost Drain',     'Water', 35),
+    ('Ghost Mastery',   'Earth', 50),
+    ('Ghost Mastery',   'Water', 50),
+    ('Ghost Spells',    'Earth', 45),
+    ('Ghost Spells',    'Water', 45),
+    # Heat (parent: Ice = Water+Air)
+    ('Heat Emergence',  'Water', 40),
+    ('Heat Emergence',  'Air', 40),
+    ('Heat Transfer',   'Water', 35),
+    ('Heat Transfer',   'Air', 35),
+    ('Heat Mastery',    'Water', 50),
+    ('Heat Mastery',    'Air', 50),
+    ('Heat Spells',     'Water', 45),
+    ('Heat Spells',     'Air', 45),
+    # Magnetic (parent: Electric = Fire+Air)
+    ('Magnetic Emergence',   'Fire', 40),
+    ('Magnetic Emergence',   'Air', 40),
+    ('Magnetic Attraction',  'Fire', 35),
+    ('Magnetic Attraction',  'Air', 35),
+    ('Magnetic Mastery',     'Fire', 50),
+    ('Magnetic Mastery',     'Air', 50),
+    ('Magnetic Spells',      'Fire', 45),
+    ('Magnetic Spells',      'Air', 45),
 ]
 
 # (node_name, required_node_name, prerequisite_group)
@@ -3308,6 +3658,73 @@ ROGUELIKE_NODE_PREREQUISITES = [
     ('Air+Fire Insight',     'Air→Fire Attunement', 1),
     ('Air→Water Attunement', 'Air Basics', 1),
     ('Air+Water Insight',    'Air→Water Attunement', 1),
+
+    # Metal: gate → tier 5, tier 5 → tier 6
+    ('Metal Foundations',     'Metal Gate', 1),
+    ('Metal Resilience',     'Metal Gate', 1),
+    ('Metal Forging',        'Metal Foundations', 1),
+    ('Metal Spell Expansion', 'Metal Foundations', 1),
+
+    # Plant
+    ('Plant Growth',         'Plant Gate', 1),
+    ('Plant Regeneration',   'Plant Gate', 1),
+    ('Plant Deepening',      'Plant Growth', 1),
+    ('Plant Spell Expansion', 'Plant Growth', 1),
+
+    # Ice
+    ('Ice Formation',        'Ice Gate', 1),
+    ('Ice Chill',            'Ice Gate', 1),
+    ('Ice Deepening',        'Ice Formation', 1),
+    ('Ice Spell Expansion',  'Ice Formation', 1),
+
+    # Electric
+    ('Electric Spark',       'Electric Gate', 1),
+    ('Electric Surge',       'Electric Gate', 1),
+    ('Electric Deepening',   'Electric Spark', 1),
+    ('Electric Spell Expansion', 'Electric Spark', 1),
+
+    # Tertiary prereqs: tier 7 requires parent's mastery node, tier 8 requires tier 7 emergence
+    # Primary tertiaries → require parent's tier 3 mastery
+    ('Radioactive Emergence', 'Combustion Mastery', 1),
+    ('Radioactive Decay',     'Combustion Mastery', 1),
+    ('Radioactive Mastery',   'Radioactive Emergence', 1),
+    ('Radioactive Spells',    'Radioactive Emergence', 1),
+
+    ('Cosmic Emergence',  'Geological Mastery', 1),
+    ('Cosmic Gravity',    'Geological Mastery', 1),
+    ('Cosmic Mastery',    'Cosmic Emergence', 1),
+    ('Cosmic Spells',     'Cosmic Emergence', 1),
+
+    ('Poison Emergence',  'Tidal Mastery', 1),
+    ('Poison Potency',    'Tidal Mastery', 1),
+    ('Poison Mastery',    'Poison Emergence', 1),
+    ('Poison Spells',     'Poison Emergence', 1),
+
+    ('Sound Emergence',   'Atmospheric Mastery', 1),
+    ('Sound Resonance',   'Atmospheric Mastery', 1),
+    ('Sound Mastery',     'Sound Emergence', 1),
+    ('Sound Spells',      'Sound Emergence', 1),
+
+    # Secondary tertiaries → require parent's tier 6 mastery (Forging/Deepening)
+    ('Crystal Emergence',   'Metal Forging', 1),
+    ('Crystal Refraction',  'Metal Forging', 1),
+    ('Crystal Mastery',     'Crystal Emergence', 1),
+    ('Crystal Spells',      'Crystal Emergence', 1),
+
+    ('Ghost Emergence', 'Plant Deepening', 1),
+    ('Ghost Drain',     'Plant Deepening', 1),
+    ('Ghost Mastery',   'Ghost Emergence', 1),
+    ('Ghost Spells',    'Ghost Emergence', 1),
+
+    ('Heat Emergence',  'Ice Deepening', 1),
+    ('Heat Transfer',   'Ice Deepening', 1),
+    ('Heat Mastery',    'Heat Emergence', 1),
+    ('Heat Spells',     'Heat Emergence', 1),
+
+    ('Magnetic Emergence',   'Electric Deepening', 1),
+    ('Magnetic Attraction',  'Electric Deepening', 1),
+    ('Magnetic Mastery',     'Magnetic Emergence', 1),
+    ('Magnetic Spells',      'Magnetic Emergence', 1),
 ]
 
 # (node_name, effect_type, target_type_name, value, description)
@@ -3367,6 +3784,71 @@ ROGUELIKE_NODE_EFFECTS = [
     ('Air+Fire Insight',     'spell_pool',   'Air',   1.0, 'Air+Fire spells in rewards'),
     ('Air→Water Attunement', 'energy_max',   'Water', 1.0, '+1 max Water energy'),
     ('Air+Water Insight',    'spell_pool',   'Air',   1.0, 'Air+Water spells in rewards'),
+
+    # Metal
+    ('Metal Foundations',     'energy_max',     'Metal', 1.0, '+1 max Metal energy'),
+    ('Metal Resilience',     'passive_block',  'Metal', 1.0, '+1 Metal spell block'),
+    ('Metal Forging',        'energy_max',     'Metal', 1.0, '+1 max Metal energy'),
+    ('Metal Spell Expansion', 'spell_pool',    'Metal', 1.0, 'Stronger Metal spells in rewards'),
+
+    # Plant
+    ('Plant Growth',         'energy_max',     'Plant', 1.0, '+1 max Plant energy'),
+    ('Plant Regeneration',   'passive_block',  'Plant', 2.0, 'Heal 2 HP after combat with Plant spells'),
+    ('Plant Deepening',      'energy_max',     'Plant', 1.0, '+1 max Plant energy'),
+    ('Plant Spell Expansion', 'spell_pool',    'Plant', 1.0, 'Stronger Plant spells in rewards'),
+
+    # Ice
+    ('Ice Formation',        'energy_max',     'Ice',   1.0, '+1 max Ice energy'),
+    ('Ice Chill',            'passive_damage', 'Ice',   1.0, 'Ice spells apply 1 Weakness'),
+    ('Ice Deepening',        'energy_max',     'Ice',   1.0, '+1 max Ice energy'),
+    ('Ice Spell Expansion',  'spell_pool',     'Ice',   1.0, 'Stronger Ice spells in rewards'),
+
+    # Electric
+    ('Electric Spark',       'energy_max',     'Electric', 1.0, '+1 max Electric energy'),
+    ('Electric Surge',       'passive_damage', 'Electric', 2.0, '+2 Electric spell damage'),
+    ('Electric Deepening',   'energy_max',     'Electric', 1.0, '+1 max Electric energy'),
+    ('Electric Spell Expansion', 'spell_pool', 'Electric', 1.0, 'Stronger Electric spells in rewards'),
+
+    # Tertiary effects
+    ('Radioactive Emergence', 'energy_max',     'Radioactive', 1.0, '+1 max Radioactive energy'),
+    ('Radioactive Decay',     'passive_damage', 'Radioactive', 2.0, '+2 Radioactive damage + DoT'),
+    ('Radioactive Mastery',   'energy_max',     'Radioactive', 1.0, '+1 max Radioactive energy'),
+    ('Radioactive Spells',    'spell_pool',     'Radioactive', 1.0, 'Radioactive spells in rewards'),
+
+    ('Cosmic Emergence',  'energy_max',     'Cosmic', 1.0, '+1 max Cosmic energy'),
+    ('Cosmic Gravity',    'passive_damage', 'Cosmic', 2.0, 'Cosmic pulls + reduces evasion'),
+    ('Cosmic Mastery',    'energy_max',     'Cosmic', 1.0, '+1 max Cosmic energy'),
+    ('Cosmic Spells',     'spell_pool',     'Cosmic', 1.0, 'Cosmic spells in rewards'),
+
+    ('Poison Emergence',  'energy_max',     'Poison', 1.0, '+1 max Poison energy'),
+    ('Poison Potency',    'passive_damage', 'Poison', 2.0, 'Poison stacks additional DoT'),
+    ('Poison Mastery',    'energy_max',     'Poison', 1.0, '+1 max Poison energy'),
+    ('Poison Spells',     'spell_pool',     'Poison', 1.0, 'Poison spells in rewards'),
+
+    ('Sound Emergence',   'energy_max',     'Sound', 1.0, '+1 max Sound energy'),
+    ('Sound Resonance',   'passive_damage', 'Sound', 2.0, 'Sound AoE to all enemies'),
+    ('Sound Mastery',     'energy_max',     'Sound', 1.0, '+1 max Sound energy'),
+    ('Sound Spells',      'spell_pool',     'Sound', 1.0, 'Sound spells in rewards'),
+
+    ('Crystal Emergence',   'energy_max',     'Crystal', 1.0, '+1 max Crystal energy'),
+    ('Crystal Refraction',  'passive_damage', 'Crystal', 2.0, 'Crystal splits damage across targets'),
+    ('Crystal Mastery',     'energy_max',     'Crystal', 1.0, '+1 max Crystal energy'),
+    ('Crystal Spells',      'spell_pool',     'Crystal', 1.0, 'Crystal spells in rewards'),
+
+    ('Ghost Emergence', 'energy_max',     'Ghost', 1.0, '+1 max Ghost energy'),
+    ('Ghost Drain',     'passive_damage', 'Ghost', 2.0, 'Ghost steals HP from enemies'),
+    ('Ghost Mastery',   'energy_max',     'Ghost', 1.0, '+1 max Ghost energy'),
+    ('Ghost Spells',    'spell_pool',     'Ghost', 1.0, 'Ghost spells in rewards'),
+
+    ('Heat Emergence',  'energy_max',     'Heat', 1.0, '+1 max Heat energy'),
+    ('Heat Transfer',   'passive_damage', 'Heat', 2.0, 'Heat converts block to damage'),
+    ('Heat Mastery',    'energy_max',     'Heat', 1.0, '+1 max Heat energy'),
+    ('Heat Spells',     'spell_pool',     'Heat', 1.0, 'Heat spells in rewards'),
+
+    ('Magnetic Emergence',   'energy_max',     'Magnetic', 1.0, '+1 max Magnetic energy'),
+    ('Magnetic Attraction',  'passive_damage', 'Magnetic', 2.0, 'Magnetic debuffs enemies'),
+    ('Magnetic Mastery',     'energy_max',     'Magnetic', 1.0, '+1 max Magnetic energy'),
+    ('Magnetic Spells',      'spell_pool',     'Magnetic', 1.0, 'Magnetic spells in rewards'),
 ]
 
 # (gate_node_name, required_type_name, required_depth)

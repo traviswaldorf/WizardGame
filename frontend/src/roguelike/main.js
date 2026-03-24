@@ -228,6 +228,12 @@ function setupDebugPanel() {
       case 'kill':
         client.moves.debugKillEnemy();
         break;
+      case 'insight':
+        client.moves.debugInsight(amount);
+        break;
+      case 'materials':
+        client.moves.debugMaterials(amount);
+        break;
       case 'restart':
         restartRun();
         break;

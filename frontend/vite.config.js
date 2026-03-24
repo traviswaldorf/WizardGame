@@ -23,6 +23,8 @@ export default defineConfig({
         'design-equipment': 'src/design/equipment.html',
         'design-progression': 'src/design/progression.html',
         'design-roguelike-progression': 'src/design/roguelike-progression.html',
+        'design-skill-tree': 'src/design/skill-tree.html',
+        'design-skill-tree-3d': 'src/design/skill-tree-3d.html',
         'design-prototype': 'src/design/prototype.html',
       },
     },

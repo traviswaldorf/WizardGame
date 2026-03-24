@@ -25,6 +25,12 @@ const DEBUG_MOVES = {
       }
     }
   },
+  debugInsight: ({ G }, amount) => {
+    G.meta.insight = Math.max(0, G.meta.insight + amount);
+  },
+  debugMaterials: ({ G }, amount) => {
+    G.meta.materials = Math.max(0, G.meta.materials + amount);
+  },
 };
 
 /**

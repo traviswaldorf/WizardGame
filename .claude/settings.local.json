@@ -19,7 +19,8 @@
       "Bash(find /c/Users/travi/source/repos/WizardGame/sdlc -type f -name *.md)",
       "Bash(grep -r \"TODO\\\\|FIXME\\\\|BUG\\\\|TBD\" /c/Users/travi/source/repos/WizardGame/frontend/src --include=*.js)",
       "WebFetch(domain:balatrowiki.org)",
-      "WebFetch(domain:alexanderwales.com)"
+      "WebFetch(domain:alexanderwales.com)",
+      "Bash(python database/build.py)"
     ]
   }
 }
